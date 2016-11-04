@@ -35,10 +35,7 @@ public:
 #endif
 
 protected:
-
-    // Generated message map functions
     afx_msg void OnRender();
-protected:
     DECLARE_MESSAGE_MAP()
 };
 

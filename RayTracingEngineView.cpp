@@ -23,7 +23,7 @@
 IMPLEMENT_DYNCREATE(CRayTracingEngineView, CView)
 
 BEGIN_MESSAGE_MAP(CRayTracingEngineView, CView)
-    ON_COMMAND(IDM_RENDER, OnRender)
+    ON_COMMAND(ID_RENDER, &CRayTracingEngineView::OnRender)
 END_MESSAGE_MAP()
 
 // CRayTracingEngineView construction/destruction
@@ -85,30 +85,6 @@ CRayTracingEngineDoc* CRayTracingEngineView::GetDocument() const // non-debug ve
 }
 #endif //_DEBUG
 
-
-// CRayTracingEngineView message handlers
-void CRayTracingEngineView::OnRender()
-{
-    if (m_pApplication != nullptr)
-        ((ApplicationEngine *)m_pApplication)->Render();
-    else
-        AfxMessageBox("Application was not allocated\n");
-
-    // Set window size
-    CRect clientRect, windowRect;
-    int x_offset, y_offset;
-
-    GetClientRect(&clientRect);
-    AfxGetMainWnd()->GetWindowRect(&windowRect);
-
-    x_offset = windowRect.Width() - clientRect.Width();
-    y_offset = windowRect.Height() - clientRect.Height();
-
-    AfxGetMainWnd()->SetWindowPos(NULL, 0, 0, x_offset + m_pApplication->m_nWidth, y_offset + m_pApplication->m_nHeight, NULL/*,SWP_SHOWWINDOW*/);
-
-    Invalidate(true);
-}
-
 void CRayTracingEngineView::DrawFrameBuffer(CDC *pDC)
 {
     if (m_pApplication->m_pFrameBuffer == nullptr)
@@ -169,4 +145,52 @@ void CRayTracingEngineView::OnInitialUpdate()
 
     // Initialize and begin renderer
     ((ApplicationEngine *)m_pApplication)->Initialize();
+}
+/*
+void CRayTracingEngineView::OnRender()
+{
+    // TODO: Add your command handler code here
+    if (m_pApplication != nullptr)
+        ((ApplicationEngine *)m_pApplication)->Render();
+    else
+        AfxMessageBox("Application was not allocated\n");
+
+    // Set window size
+    CRect clientRect, windowRect;
+    int x_offset, y_offset;
+
+    GetClientRect(&clientRect);
+    AfxGetMainWnd()->GetWindowRect(&windowRect);
+
+    x_offset = windowRect.Width() - clientRect.Width();
+    y_offset = windowRect.Height() - clientRect.Height();
+
+    AfxGetMainWnd()->SetWindowPos(NULL, 0, 0, x_offset + m_pApplication->m_nWidth, y_offset + m_pApplication->m_nHeight, NULL);
+
+    Invalidate(true);
+}
+*/
+
+
+void CRayTracingEngineView::OnRender()
+{
+    // TODO: Add your command handler code here
+    if (m_pApplication != nullptr)
+        ((ApplicationEngine *)m_pApplication)->Render();
+    else
+        AfxMessageBox("Application was not allocated\n");
+
+    // Set window size
+    CRect clientRect, windowRect;
+    int x_offset, y_offset;
+
+    GetClientRect(&clientRect);
+    AfxGetMainWnd()->GetWindowRect(&windowRect);
+
+    x_offset = windowRect.Width() - clientRect.Width();
+    y_offset = windowRect.Height() - clientRect.Height();
+
+    AfxGetMainWnd()->SetWindowPos(NULL, 0, 0, x_offset + m_pApplication->m_nWidth, y_offset + m_pApplication->m_nHeight, NULL);
+
+    Invalidate(true);
 }

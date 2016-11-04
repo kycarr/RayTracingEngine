@@ -1,7 +1,8 @@
 /*
  * Gz.h - include file for the cs580 rendering library
  */
-
+#ifndef GZ_H
+#define GZ_H
 /*
  * universal constants
  */
@@ -101,3 +102,5 @@ typedef struct  GzInput
 
 #define U       0        /* array indicies for texture coords */
 #define V       1
+
+#endif

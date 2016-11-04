@@ -29,7 +29,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -178,18 +178,23 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="ApplicationEngine.h" />
+    <ClInclude Include="disp.h" />
+    <ClInclude Include="gz.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="RayTracingEngine.h" />
     <ClInclude Include="RayTracingEngineDoc.h" />
     <ClInclude Include="RayTracingEngineView.h" />
+    <ClInclude Include="rend.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ApplicationEngine.cpp" />
+    <ClCompile Include="disp.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="RayTracingEngine.cpp" />
     <ClCompile Include="RayTracingEngineDoc.cpp" />

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Application.h"
 
 class CRayTracingEngineView : public CView
 {
@@ -14,14 +15,15 @@ protected: // create from serialization only
     // Attributes
 public:
     CRayTracingEngineDoc* GetDocument() const;
-
+    Application* m_pApplication;
     // Operations
 public:
-
+    void DrawFrameBuffer(CDC *pDC);
     // Overrides
 public:
     virtual void OnDraw(CDC* pDC);  // overridden to draw this view
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+    virtual void OnInitialUpdate();
 protected:
 
     // Implementation
@@ -35,6 +37,7 @@ public:
 protected:
 
     // Generated message map functions
+    afx_msg void OnRender();
 protected:
     DECLARE_MESSAGE_MAP()
 };

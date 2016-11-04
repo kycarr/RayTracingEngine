@@ -46,7 +46,7 @@ ApplicationEngine::~ApplicationEngine()
 int ApplicationEngine::Initialize()
 {
     //GzCamera	camera;  
-    int		    xRes, yRes;	/* display parameters */ 
+    //int		    xRes, yRes;	/* display parameters */ 
 
 
     //GzToken		nameListShader[9]; 	    /* shader attribute names */
@@ -269,8 +269,8 @@ int ApplicationEngine::Render()
 
     int	ulx, uly, lrx, lry, r, g, b;
     while( fscanf(infile, "%d %d %d %d %d %d %d", &ulx, &uly, &lrx, &lry, &r, &g, &b) == 7) { 
-        for (j = uly; j <= lry; j++) {
-            for (i = ulx; i <= lrx; i++) {
+        for (int j = uly; j <= lry; j++) {
+            for (int i = ulx; i <= lrx; i++) {
                 status |= GzPutDisplay(m_pDisplay, i, j, r, g, b, 1, 0);
             }
         }

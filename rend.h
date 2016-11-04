@@ -1,3 +1,6 @@
+#ifndef REND_H
+#define REND_H
+
 #include "disp.h" /* include your own disp.h file (e.g. hw1)*/
 
 /* Camera defaults */
@@ -80,3 +83,5 @@ int phongShading(GzRender *render, GzCoord verts[3], GzCoord norms[3], GzColor c
 
 // HW5
 int GzFreeTexture();
+
+#endif

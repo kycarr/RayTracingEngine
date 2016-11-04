@@ -1,6 +1,8 @@
 /* 
   disp.h -- cs580 HW1 include file for Display
 */
+#ifndef DISP_H
+#define DISP_H
 
 #include	"gz.h"
 
@@ -48,3 +50,5 @@ int GzGetDisplay(GzDisplay *display, int i, int j,
 		GzIntensity *r, GzIntensity *g, GzIntensity *b, GzIntensity *a, GzDepth	*z);
 int GzFlushDisplay2File(FILE* outfile, GzDisplay *display);
 int GzFlushDisplay2FrameBuffer(char* framebuffer, GzDisplay* display);
+
+#endif

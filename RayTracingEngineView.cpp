@@ -11,6 +11,7 @@
 
 #include "RayTracingEngineDoc.h"
 #include "RayTracingEngineView.h"
+#include "ApplicationEngine.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,38 +23,45 @@
 IMPLEMENT_DYNCREATE(CRayTracingEngineView, CView)
 
 BEGIN_MESSAGE_MAP(CRayTracingEngineView, CView)
+    ON_COMMAND(IDM_RENDER, OnRender)
 END_MESSAGE_MAP()
 
 // CRayTracingEngineView construction/destruction
 
 CRayTracingEngineView::CRayTracingEngineView()
 {
-	// TODO: add construction code here
-
+    // TODO: add construction code here
+    m_pApplication = nullptr;
 }
 
 CRayTracingEngineView::~CRayTracingEngineView()
 {
+    if (m_pApplication != nullptr)
+    {
+        delete m_pApplication;
+    }
 }
 
 BOOL CRayTracingEngineView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: Modify the Window class or styles here by modifying
-	//  the CREATESTRUCT cs
+    // TODO: Modify the Window class or styles here by modifying
+    //  the CREATESTRUCT cs
 
-	return CView::PreCreateWindow(cs);
+    return CView::PreCreateWindow(cs);
 }
 
 // CRayTracingEngineView drawing
 
-void CRayTracingEngineView::OnDraw(CDC* /*pDC*/)
+void CRayTracingEngineView::OnDraw(CDC* pDC)
 {
-	CRayTracingEngineDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-	if (!pDoc)
-		return;
+    CRayTracingEngineDoc* pDoc = GetDocument();
+    ASSERT_VALID(pDoc);
+    if (!pDoc)
+        return;
 
-	// TODO: add draw code for native data here
+    // TODO: add draw code for native data here
+    if (m_pApplication != nullptr)
+        DrawFrameBuffer(pDC);
 }
 
 
@@ -62,20 +70,103 @@ void CRayTracingEngineView::OnDraw(CDC* /*pDC*/)
 #ifdef _DEBUG
 void CRayTracingEngineView::AssertValid() const
 {
-	CView::AssertValid();
+    CView::AssertValid();
 }
 
 void CRayTracingEngineView::Dump(CDumpContext& dc) const
 {
-	CView::Dump(dc);
+    CView::Dump(dc);
 }
 
 CRayTracingEngineDoc* CRayTracingEngineView::GetDocument() const // non-debug version is inline
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CRayTracingEngineDoc)));
-	return (CRayTracingEngineDoc*)m_pDocument;
+    ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CRayTracingEngineDoc)));
+    return (CRayTracingEngineDoc*)m_pDocument;
 }
 #endif //_DEBUG
 
 
 // CRayTracingEngineView message handlers
+void CRayTracingEngineView::OnRender()
+{
+    if (m_pApplication != nullptr)
+        ((ApplicationEngine *)m_pApplication)->Render();
+    else
+        AfxMessageBox("Application was not allocated\n");
+
+    // Set window size
+    CRect clientRect, windowRect;
+    int x_offset, y_offset;
+
+    GetClientRect(&clientRect);
+    AfxGetMainWnd()->GetWindowRect(&windowRect);
+
+    x_offset = windowRect.Width() - clientRect.Width();
+    y_offset = windowRect.Height() - clientRect.Height();
+
+    AfxGetMainWnd()->SetWindowPos(NULL, 0, 0, x_offset + m_pApplication->m_nWidth, y_offset + m_pApplication->m_nHeight, NULL/*,SWP_SHOWWINDOW*/);
+
+    Invalidate(true);
+}
+
+void CRayTracingEngineView::DrawFrameBuffer(CDC *pDC)
+{
+    if (m_pApplication->m_pFrameBuffer == nullptr)
+    {
+        return;
+    }
+
+    HDC hdc;
+    hdc = ::CreateCompatibleDC(pDC->m_hDC);
+    HBITMAP m_bitmap;
+
+    // Display the current image
+    char buffer[sizeof(BITMAPINFO)];
+    BITMAPINFO* binfo = (BITMAPINFO*)buffer;
+    memset(binfo, 0, sizeof(BITMAPINFOHEADER));
+    binfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+
+    // Create the bitmap
+    BITMAPINFOHEADER* bih = &binfo->bmiHeader;
+    bih->biBitCount = 3 * 8;
+    bih->biWidth = m_pApplication->m_nWidth;
+    bih->biHeight = m_pApplication->m_nHeight;
+    bih->biPlanes = 1;
+    bih->biCompression = BI_RGB;
+    bih->biSizeImage = 0;
+
+    m_bitmap = CreateDIBSection(hdc, binfo, 0, 0, 0, DIB_RGB_COLORS);
+
+    int colors = DIB_RGB_COLORS;
+
+    ::SelectObject(hdc, m_bitmap);
+    binfo->bmiHeader.biBitCount = 0;
+    GetDIBits(hdc, m_bitmap, 0, 0, 0, binfo, colors);
+    binfo->bmiHeader.biBitCount = 24;
+    binfo->bmiHeader.biHeight = -abs(binfo->bmiHeader.biHeight);
+    SetDIBits(hdc, m_bitmap, 0, m_pApplication->m_nHeight, m_pApplication->m_pFrameBuffer, binfo, colors);
+
+    ::SetStretchBltMode(pDC->m_hDC, COLORONCOLOR);
+    CRect client;
+    GetClientRect(&client);
+    ::BitBlt(pDC->m_hDC, 0, 0, m_pApplication->m_nWidth, m_pApplication->m_nHeight,
+        hdc, 0, 0, SRCCOPY);
+    ::DeleteDC(hdc);
+    DeleteObject(m_bitmap);
+}
+
+void CRayTracingEngineView::OnInitialUpdate()
+{
+    CView::OnInitialUpdate();
+
+    // TODO: Add your specialized code here and/or call the base class
+
+    // Assign Application 5
+    if (m_pApplication == nullptr)
+    {
+        m_pApplication = new ApplicationEngine;
+    }
+
+    // Initialize and begin renderer
+    ((ApplicationEngine *)m_pApplication)->Initialize();
+}

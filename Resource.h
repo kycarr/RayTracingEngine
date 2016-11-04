@@ -2,9 +2,10 @@
 // Microsoft Visual C++ generated include file.
 // Used by RayTracingEngine.rc
 //
-#define IDD_ABOUTBOX				100
-#define IDR_MAINFRAME				128
-#define IDR_RayTracingTYPE				130
+#define IDD_ABOUTBOX                    100
+#define IDR_MAINFRAME                   128
+#define IDR_RayTracingTYPE              130
+#define IDM_RENDER                      32771
 
 // Next default values for new objects
 //

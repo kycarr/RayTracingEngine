@@ -1,6 +1,7 @@
 /*
  * Gz.h - include file for the cs580 rendering library
  */
+//tuo piao123
 #ifndef GZ_H
 #define GZ_H
 /*

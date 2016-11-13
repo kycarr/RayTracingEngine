@@ -1,3 +1,5 @@
+#ifndef LIGHT_H
+#define LIGHT_H
 // I'm unsure how our design will look (whether these will all be in one file or several files),
 // but if in several files the color and vector classes will need to be included here - Kayla
 
@@ -31,3 +33,4 @@ GzLight::GzLight(int t, GzVector pos, GzColor col)
     position = pos;
     color = col;
 }
+#endif

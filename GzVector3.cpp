@@ -55,5 +55,5 @@ GzVector3& operator*(float &times, const GzVector3 &v1)
 }
 GzVector3& operator*(const GzVector3 &v1, float &times))
 {
-    return this->operator*(&times, &v1);
+    return times * v1;
 }

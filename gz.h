@@ -60,50 +60,6 @@ typedef int GzDepth;
 // Redesign complex typedef's as classes and write proper methods
 // We need at least GzVector, GzTextureIndex, GzMatrix, GzColor classes
 // And we need to make new classes like GzRay, GzGeometry, GzMaterial etc. --Jialiu
-class GzColor
-{
-public:// If you don't like public attributes, make it private and declare accessing functions
-    float r, g, b;
-
-    GzColor();
-    GzColor(float a_r, float a_g, float a_b);
-
-    // This class automatically has a copy constructor.
-    // For example, you can use `GzColor anyVar(blue)` where blue is already a color object
-    friend GzColor operator+(const GzColor &c1, const GzColor &c2);
-    friend GzColor operator*(const GzColor &c1, float s);
-    GzColor modulate(GzColor);
-};
-
-// This constructor makes `GzColor anyVar;` constructing a black color object
-// Or `new GzColor()` returns a pointer to black color object
-GzColor::GzColor() :
-    r(0.0f), g(0.0f), b(0.0f)
-{
-}
-
-// This constructor makes `GzColor anyVar(a, b, c);` constructing a color object
-// And you can use somehow more familiar format `new GzColor(a, b, c)` to return a pointer
-GzColor::GzColor(float a_r, float a_g, float a_b) :
-    r(a_r), g(a_g), b(a_b)
-{
-}
-
-// It's generally better to avoid copy initialization for a class, such as `GzColor anyVar = GzColor(0, 0, 1);`.
-// You can use `GzColor anyVar(0, 0, 1);` or in C++11 `GzColor anyVar {0, 0, 1};` instead.
-
-// This operator overloading enables us to do things like `GzColor anyVar(blue + red);`
-// And the code above is an example to use copy constructor  ^^^^^^^^^^^^^^^^^^^^^^
-GzColor operator+(const GzColor &c1, const GzColor &c2)
-{
-    return GzColor(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b);
-}
-
-// This operator overloading enables us to do things like `GzColor grey(white * 0.1);`
-GzColor operator*(const GzColor &c1, float s)
-{
-    return GzColor(c1.r * s, c1.g * s, c1.b * s);
-}
 
 typedef int (*GzTexture)(float u, float v, GzColor color); /* pointer to texture sampling method */
 /* u,v parameters [0,1] are defined tex_fun(float u, float v, GzColor color) */

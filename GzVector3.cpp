@@ -41,20 +41,19 @@ GzVector3& crossMultiplay(const GzVector3 &cross) const
     return GzVector3(this->y*cross.z - this->z*cross.y, this->z*cross.x - this->x*cross.z,
                          this->x*cross.y - this->y*cross.x);
 }
-GzVector3& operator+(const GzVector3 &add1, const GzVector3 &add2) const
+GzVector3& operator+(const GzVector3 &add1, const GzVector3 &add2)
 {
     return GzVector3(add1.x+add2.x, add1.y+add2.y, add1.z+add2.z);
 }
-GzVector3& operator*(float &times, const GzVector3 &v1) const
+GzVector3& operator-(const GzVector3 &minus1, const GzVector3 &minus2)
+{
+    return GzVector3(minus1.x-minus2.x, minus1.y-minus2.y, minus1.z-minus2.z);
+}
+GzVector3& operator*(float &times, const GzVector3 &v1)
 {
     return GzVector3(v1.x*times, v1.y*times, v1.z*times);
 }
-GzVector3& operator*(const GzVector3 &v1, float &times)) const
+GzVector3& operator*(const GzVector3 &v1, float &times))
 {
-    return this->operator*(times, v1);
-}
-GzVector3& operator/(float &divide) const
-{
-    if (divide == 0) return GzVector3();
-    return GzVector3(this->x/divide, this->y/divide, this->z/divide);
+    return times * v1;
 }

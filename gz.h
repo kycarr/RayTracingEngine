@@ -1,29 +1,29 @@
-/*
- * Gz.h - include file for the cs580 rendering library
- */
-//tuo piao123
 #ifndef GZ_H
 #define GZ_H
-/*
- * universal constants
- */
+//
+// Gz.h     Contains all the basic classes header files,
+//          only need to include this header to use all the API.
+
+// universal constants
+
+// int values used as status indicators
 const int GZ_SUCCESS(0);
 const int GZ_FAILURE(1);
 
 // Make all the following #define preprocessing instructions as const int declarations. --Jialiu
-/*
- * name list tokens
- */
-#define GZ_NULL_TOKEN        0 /* triangle vert attributes */
+//
+// name list tokens
+//
+#define GZ_NULL_TOKEN        0 // triangle vert attributes
 #define GZ_POSITION          1
 #define GZ_NORMAL            2
 #define GZ_TEXTURE_INDEX     3
 
 #define AAKERNEL_SIZE 6
-#define GZ_AASHIFTX 44 /* antialiasing screen offset */
-#define GZ_AASHIFTY 45 /* antialiasing screen offset */
+#define GZ_AASHIFTX 44 // antialiasing screen offset
+#define GZ_AASHIFTY 45 // antialiasing screen offset
 
-/* renderer-state default pixel color */
+// renderer-state default pixel color
 #define GZ_RGB_COLOR            99
 
 #define GZ_INTERPOLATE 95 /* define interpolation mode */

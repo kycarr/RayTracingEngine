@@ -1,0 +1,44 @@
+class GzVector
+{
+    attributes: float x, y, z; //or float[3]?
+    operator overloading: +, -, *, /;
+    methods: float length();
+             GzVector normalize();
+             GzVector negate();
+             GzVector dotMultiply(GzVector);
+             GzVector crossMultiply(GzVector);
+}
+
+class GzRay
+{
+    attributes: GzVector origin, direction;
+}
+
+class GzLight
+{
+    attributes: GzVector position;
+                int type; // 0 for directional, 1 for point light
+}
+
+class GzColor
+{
+    attributes: float r, g, b;
+    operator overloading: +, *;
+    methods: GzColor modulate(GzColor);
+}
+
+class GzCamera
+{
+    attributes: GzVector position, front, up, right;
+}
+
+class GzGeometry
+{
+    // base class, will be inherited by other geometry classes
+    methods: virtual IntersectResult intersect(GzRay);
+}
+
+class IntersectResult
+{
+    methods: shade(GzLight[]);
+}

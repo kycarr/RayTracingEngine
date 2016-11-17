@@ -13,10 +13,10 @@ class GzVector3
     GzVector3& crossMultiply(const GzVector3 &cross) const;
 }
 // operator overloads
-GzVector3& operator+(const GzVector3 &v1, const GzVector3 &v2);
-GzVector3& operator-(const GzVector3 &v1, const GzVector3 &v2);
-GzVector3& operator*(const GzVector3 &v1, float s);
-GzVector3& operator*(float s, const GzVector3 &v1);
+GzVector3& operator+(const GzVector3 &add1, const GzVector3 &add2);
+GzVector3& operator-(const GzVector3 &minus1, const GzVector3 &minus2);
+GzVector3& operator*(const GzVector3 &v1, float times);
+GzVector3& operator*(float times, const GzVector3 &v1);
 
 class GzColor
 {

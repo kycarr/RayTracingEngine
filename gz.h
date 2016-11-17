@@ -5,8 +5,8 @@
 //                  only need to include this header to use all the API.
 
 #include "GzVector3.h"
-//#include "GzColor.h"
-//#include "GzRay.h"
+#include "GzColor.h"
+#include "GzRay.h"
 #include "GzCamera.h"
 
 // universal constants
@@ -17,7 +17,6 @@ const int GZ_FAILURE(1);
 // for math calculations
 const double PI(3.1415926535897932);
 
-// Make all the following #define preprocessing instructions as const int declarations. --Jialiu
 //
 // name list tokens
 //
@@ -117,7 +116,7 @@ typedef int GzDepth;
 //#define Z       2
 //const int W(3);
 //const int COORD3_BOUND(3);
-//const int COORD4_BOUND(4);
+const int COORD4_BOUND(4);
 
 //const int VA(0);
 //const int VB(1);

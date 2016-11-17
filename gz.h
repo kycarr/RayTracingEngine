@@ -1,8 +1,13 @@
 #ifndef GZ_H
 #define GZ_H
-//
-// Gz.h     Contains all the basic classes header files,
-//          only need to include this header to use all the API.
+
+// gz.h             Contains all the basic classes header files,
+//                  only need to include this header to use all the API.
+
+#include "GzVector3.h"
+#include "GzColor.h"
+#include "GzRay.h"
+#include "GzCamera.h"
 
 // universal constants
 
@@ -100,9 +105,9 @@ typedef struct  GzInput
 } GzInput;
 #endif
 
-#define RED     0        /* array indicies for color vector */
-#define GREEN   1
-#define BLUE    2
+//#define RED     0        /* array indicies for color vector */
+//#define GREEN   1
+//#define BLUE    2
 const int COLOR_BOUND(3);
 
 #define X       0        /* array indicies for position vector*/

@@ -183,6 +183,7 @@
     <ClInclude Include="disp.h" />
     <ClInclude Include="gz.h" />
     <ClInclude Include="GzColor.h" />
+    <ClInclude Include="GzVector3.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="RayTracingEngine.h" />
     <ClInclude Include="RayTracingEngineDoc.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="ApplicationEngine.cpp" />
     <ClCompile Include="disp.cpp" />
     <ClCompile Include="GzColor.cpp" />
+    <ClCompile Include="GzVector3.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="RayTracingEngine.cpp" />
     <ClCompile Include="RayTracingEngineDoc.cpp" />

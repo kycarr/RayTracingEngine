@@ -24,8 +24,7 @@ Application::Application()
 
 Application::~Application()
 {
-	if(m_pFrameBuffer != nullptr)
-		delete m_pFrameBuffer;
+	delete m_pFrameBuffer;
 	//if(m_pUserInput != nullptr)
 		//delete m_pUserInput;
 }

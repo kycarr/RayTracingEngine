@@ -1,30 +1,73 @@
-class GzVector
+class GzVector3
 {
-    attributes: float x, y, z; //or float[3]?
-    operator overloading: +, -, *, /;
-    methods: float length();
-             GzVector normalize();
-             GzVector negate();
-             GzVector dotMultiply(GzVector);
-             GzVector crossMultiply(GzVector);
+// attributes
+    float x, y, z;
+// constructors
+    GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
+    GzVector3(float a_x, float a_y, float a_z);
+// methods
+    float length() const;
+    GzVector3& normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
+    GzVector3& negate() const; // Return the negative of this vector.
+    float dotMultiply(const GzVector3 &other) const;
+    GzVector3& crossMultiply(const GzVector3 &other) const;
 }
+// operator overloads
+GzVector3& operator+(const GzVector3 &v1, const GzVector3 &v2);
+GzVector3& operator-(const GzVector3 &v1, const GzVector3 &v2);
+GzVector3& operator*(const GzVector3 &v1, float s);
+GzVector3& operator*(float s, const GzVector3 &v1);
+
+class GzColor
+{
+// attributes
+    float r, g, b;
+// constructors
+    GzColor(); // Default constructor. Build a black GzColor object.
+    GzColor(float a_r, float a_g, float a_b);
+// methods
+    GzColor& modulate(const GzColor &other) const;
+// static members
+    const static GzColor BLACK;
+    const static GzColor WHITE;
+    const static GzColor RED;
+    const static GzColor GREEN;
+    const static GzColor BLUE;
+    const static GzColor CYAN;
+    const static GzColor MAGENTA;
+    const static GzColor YELLOW;
+}
+// operator overloads
+GzColor& operator+(const GzColor &c1, const GzColor &c2);
+GzColor& operator*(const GzColor &c1, float s);
 
 class GzRay
 {
-    attributes: GzVector origin, direction;
+// attributes
+    GzVector3 origin, direction;
+// constructors
+    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
+    GzRay(const GzVector3 &p, const GzVector3 &d);
+// methods
+    GzVector3& getPoint(float distance) const;
+}
+
+class IntersectResult
+{
+// attributes
+    GzGeometry geometry; // Should be a reference to the geometry at the point of intersecting.
+    float distance;
+    GzVector3 position;
+    GzVector3 normal;
+// constructors
+// methods
+    shade(GzLight[]);
 }
 
 class GzLight
 {
     attributes: GzVector position;
                 int type; // 0 for directional, 1 for point light
-}
-
-class GzColor
-{
-    attributes: float r, g, b;
-    operator overloading: +, *;
-    methods: GzColor modulate(GzColor);
 }
 
 class GzCamera
@@ -36,9 +79,4 @@ class GzGeometry
 {
     // base class, will be inherited by other geometry classes
     methods: virtual IntersectResult intersect(GzRay);
-}
-
-class IntersectResult
-{
-    methods: shade(GzLight[]);
 }

@@ -9,14 +9,14 @@ class GzVector3
     float length() const;
     GzVector3& normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
     GzVector3& negate() const; // Return the negative of this vector.
-    float dotMultiply(const GzVector3 &other) const;
-    GzVector3& crossMultiply(const GzVector3 &other) const;
+    float dotMultiply(const GzVector3 &dot) const;
+    GzVector3& crossMultiply(const GzVector3 &cross) const;
 }
 // operator overloads
-GzVector3& operator+(const GzVector3 &v1, const GzVector3 &v2);
-GzVector3& operator-(const GzVector3 &v1, const GzVector3 &v2);
-GzVector3& operator*(const GzVector3 &v1, float s);
-GzVector3& operator*(float s, const GzVector3 &v1);
+GzVector3& operator+(const GzVector3 &add1, const GzVector3 &add2);
+GzVector3& operator-(const GzVector3 &minus1, const GzVector3 &minus2);
+GzVector3& operator*(const GzVector3 &v1, float times);
+GzVector3& operator*(float times, const GzVector3 &v1);
 
 class GzColor
 {
@@ -52,6 +52,12 @@ class GzRay
     GzVector3& getPoint(float distance) const;
 }
 
+class GzGeometry
+{
+    // base class, will be inherited by other geometry classes
+    methods: virtual IntersectResult intersect(GzRay);
+}
+
 class IntersectResult
 {
 // attributes
@@ -60,23 +66,25 @@ class IntersectResult
     GzVector3 position;
     GzVector3 normal;
 // constructors
+    IntersectResult(); // Default constructor. Build an object that do not intersect.
+    IntersectResult(const GzGeometry &obj, float d, const GzVector3 &p, const GzVector3 &n);
 // methods
     shade(GzLight[]);
+}
+
+class GzCamera
+{
+// attributes
+    GzVector3 position, front, up, right;
+// constructors
+    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, -1), with FOV as 90 degree.
+    GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
+// methods
+    GzRay& generateRay(float ndcx, float ndcy) const;
 }
 
 class GzLight
 {
     attributes: GzVector position;
                 int type; // 0 for directional, 1 for point light
-}
-
-class GzCamera
-{
-    attributes: GzVector position, front, up, right;
-}
-
-class GzGeometry
-{
-    // base class, will be inherited by other geometry classes
-    methods: virtual IntersectResult intersect(GzRay);
 }

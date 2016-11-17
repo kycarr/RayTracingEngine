@@ -1,25 +1,23 @@
-#ifndef RAY_H
-#define RAY_H
-//#include Color.h      // GzColor
-//#include Vector.h     // GzVector
+#ifndef GZRAY_H
+#define GZRAY_H
 
-// Represents a directional or point light
+// GzRay.h          The definition of class GzRay
+
+#include "gz.h"
 
 class GzRay
 {
 public:
-   
-    GzVector origin;  // position if point light, direction if directional light
-	GzVector direction;
-    GzRay(GzVector p, GzVector d);
-	GzVector getPoint(float distance);
+// attributes
+    GzVector3 origin, direction;
+// constructors
+    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
+    GzRay(const GzVector3 &p, const GzVector3 &d);
+// methods
+    GzVector3 getPoint(float distance) const;
 };
-// vector need 
-// normalize(), multiply( float multiplier), add(Gzvector vector to be add in) , substract(GzVector vector to substract), float dotMutiply()
-// Ray construction
-void GzRay::GzRay(GzVector p, GzVector d){origin=p;  direction = d.normalize();}
-GzVector GzRay::getPoint(float distance){  return (direction.multiply(distance)).add(this->origin);}
 
+/*
 class IntersectResult{
 	public:
    float distance ;
@@ -30,4 +28,6 @@ class IntersectResult{
 void IntersectResult::IntersectResult(GzVector p, float d, GzVector n,  GzObject * obj ){position=p;  normal = n.normalize(); distance=d; 
  intersect_ojb =obj;
 }
+*/
+
 #endif

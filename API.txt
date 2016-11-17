@@ -68,7 +68,8 @@ class GzRay
 class GzGeometry
 {
     // base class, will be inherited by other geometry classes
-    methods: virtual IntersectResult intersect(GzRay);
+    //methods: virtual IntersectResult intersect(GzRay);
+    // not decided
 }
 
 class IntersectResult
@@ -76,13 +77,14 @@ class IntersectResult
 // attributes
     GzGeometry geometry; // Should be a reference to the geometry at the point of intersecting.
     float distance;
-    GzVector3 position;
-    GzVector3 normal;
+    GzVector3 position, normal;
 // constructors
     IntersectResult(); // Default constructor. Build an object that do not intersect.
     IntersectResult(const GzGeometry &obj, float d, const GzVector3 &p, const GzVector3 &n);
 // methods
-    shade(GzLight[]);
+    shade(GzLight[]); // not decided
+// static members
+    const static IntersectResult NOHIT;
 }
 
 class GzCamera

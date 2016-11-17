@@ -22,7 +22,7 @@ public:
 //        std::cout << "Copy called" << std::endl;
 //    }
 
-    GzVector3& operator=(const GzVector3 &vc);
+    //GzVector3& operator=(const GzVector3 &vc);
 
     float length() const;
     GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.

@@ -1,12 +1,7 @@
-//#include "stdafx.h"
+#include "stdafx.h" // if testing with console program, comment this line out
 #include "GzCamera.h"
 #include <cmath>
 //#include <iostream>
-
-GzVector3 schimidt(const GzVector3 &general, const GzVector3 &unit)
-{
-    return (general - general.dotMultiply(unit) * unit).normalize();
-}
 
 GzCamera::GzCamera() :
     position(0.0f, 0.0f, 0.0f), front(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f), fovScale(1.0f)
@@ -18,11 +13,16 @@ GzCamera::GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 
     position(p), front((lookat - p).normalize()), up(schimidt(worldup, this->front)),
     right((this->up).crossMultiply(this->front)), fovScale(static_cast<float>(std::tan(fov * PI / 360)))
 {
-    // Default copy constructor called. It's fine now.
-    //this->position = p;
-    //std::cout << "position" << std::endl;
-    //this->front = (lookat - p).normalize();
-    //this->up = schimidt(worldup, this->front);
-    //this->right = (this->up).crossMultiply(this->front);
-//    this->fovScale = static_cast<float>(std::tan(fov * PI / 360));
+}
+
+GzRay GzCamera::generateRay(float ndcx, float ndcy) const
+{
+    GzVector3 r(ndcx * this->fovScale * this->right);
+    GzVector3 u(ndcy * this->fovScale * this->up);
+    return GzRay(this->position, this-front + r + u);
+}
+
+GzVector3 schimidt(const GzVector3 &general, const GzVector3 &unit)
+{
+    return (general - general.dotMultiply(unit) * unit).normalize();
 }

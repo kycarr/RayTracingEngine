@@ -7,8 +7,7 @@
 #include "ApplicationEngine.h"
 #include "gz.h"
 #include "disp.h"
-#include "rend.h"
-#include <stdio.h>
+//#include "rend.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -55,7 +54,7 @@ int ApplicationEngine::Initialize()
     //GzPointer   valueListLights[10];
     //int			shaderType, interpStyle;
     //float		specpower;
-    int status(0); 
+    int status(GZ_SUCCESS); 
 
     /* 
      * Allocate memory for user input
@@ -69,9 +68,9 @@ int ApplicationEngine::Initialize()
     m_nHeight = 256;    // frame buffer and display height
 
     //Only need one framebuffer, but AAKERNEL_SIZE displays and renderers
-    status |= GzNewFrameBuffer(&m_pFrameBuffer, m_nWidth, m_nHeight);
+    status = status || GzNewFrameBuffer(m_pFrameBuffer, m_nWidth, m_nHeight);
 
-    status |= GzNewDisplay(&m_pDisplay, m_nWidth, m_nHeight);
+    //status = status || GzNewDisplay(&m_pDisplay, m_nWidth, m_nHeight);
 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{
@@ -222,8 +221,10 @@ int ApplicationEngine::Initialize()
         //status |= GzPushMatrix(AArenders_list[i], rotateX);
     //}
 
-    //if (status) exit(GZ_FAILURE);
-
+    if (status)
+    {
+        AfxMessageBox("Initiating went wrong!\n");
+    }
     return(status);
 }
 
@@ -239,7 +240,7 @@ int ApplicationEngine::Render()
 
 
     /* Initialize Display */
-    status |= GzInitDisplay(m_pDisplay); 
+    //status |= GzInitDisplay(m_pDisplay); 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{
         //status |= GzInitDisplay(AAdisplays_list[i]); 
@@ -253,6 +254,7 @@ int ApplicationEngine::Render()
     //nameListTriangle[2] = GZ_TEXTURE_INDEX;  
 
     // I/O File open
+    /*
     FILE *infile;
     if( (infile  = fopen( INFILE , "r" )) == NULL )
     {
@@ -274,7 +276,7 @@ int ApplicationEngine::Render()
                 status |= GzPutDisplay(m_pDisplay, i, j, r, g, b, 1, 0);
             }
         }
-    } 
+    }*/
 
     /* 
      * Walk through the list of triangles, set color 
@@ -334,19 +336,22 @@ int ApplicationEngine::Render()
         //}
     //}
 
-    GzFlushDisplay2File(outfile, m_pDisplay); 	/* write out or update display to file*/
-    GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay);	// write out or update display to frame buffer
+    //GzFlushDisplay2File(outfile, m_pDisplay); 	/* write out or update display to file*/
+    //GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay);	// write out or update display to frame buffer
 
     /* 
      * Close file
      */ 
 
-    if( fclose( infile ) )
-        AfxMessageBox( "The input file was not closed\n" );
+    //if( fclose( infile ) )
+        //AfxMessageBox( "The input file was not closed\n" );
 
-    if( fclose( outfile ) )
-        AfxMessageBox( "The output file was not closed\n" );
-
+    //if( fclose( outfile ) )
+        //AfxMessageBox( "The output file was not closed\n" );
+    if (status)
+    {
+        AfxMessageBox("Rendering went wrong!\n");
+    }
     return(status); 
 }
 
@@ -363,7 +368,7 @@ int ApplicationEngine::Clean()
         //status |= GzFreeDisplay(AAdisplays_list[i]);
     //}
     //status |= GzFreeRender(m_pRender); 
-    status |= GzFreeDisplay(m_pDisplay);
+    //status |= GzFreeDisplay(m_pDisplay);
     //status |= GzFreeTexture();
 
     return(status);

@@ -36,10 +36,7 @@ CRayTracingEngineView::CRayTracingEngineView()
 
 CRayTracingEngineView::~CRayTracingEngineView()
 {
-    if (m_pApplication != nullptr)
-    {
-        delete m_pApplication;
-    }
+    delete m_pApplication;
 }
 
 BOOL CRayTracingEngineView::PreCreateWindow(CREATESTRUCT& cs)

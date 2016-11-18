@@ -2,7 +2,7 @@
 #define GEOMETRY_H
 //#include Color.h      // GzColor
 //#include Vector.h     // GzVector
-#include<algorithm>
+//#include<algorithm>
 #include "Ray.h"
 #include "Light.h"
 class GzObject

@@ -113,16 +113,27 @@ class GzPixel
     GzPixel(); // Default constructor. Build a black pixel.
     GzPixel(unsigned int a_r, a_g, a_b, a_a = 4095);
     GzPixel(const GzColor &pixelColor);
-// static method
+// methods
+    void putColor(const GzColor &pixelColor);
+// static methods
     static unsigned short ctoi(float color);
 };
 
 class GzDisplay
 {
-// attributes
-    short xres, yres;
 // constructors
     GzDisplay(); // Default constructor. Build a display with max resolutions.
     GzDisplay(int a_xRes, a_yRes);
     ~GzDisplay();
+// methods
+    int index(int i, int j);
+    int init(const GzColor &back);
+    void putDisplay(int i, int j, const GzPixel &p);
+    void putDisplay(int i, int j, const GzColor &c);
+    int getDisplay(int i, int j, GzPixel &get);
+    int flush2File(FILE* outfile);
+    int flush2FrameBuffer(char* framebuffer);
+// static members
+    const static short MAXXRES;
+    const static short MAXYRES;
 };

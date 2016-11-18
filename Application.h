@@ -5,7 +5,7 @@
 #pragma once
 
 #include "gz.h"
-#include "disp.h"
+#include "GzDisplay.h"
 //#include "rend.h"
 
 class Application  
@@ -15,7 +15,7 @@ public:
 	virtual ~Application();
 	
 public:
-	//GzDisplay* m_pDisplay;		// the display
+	GzDisplay* m_pDisplay;		// the display
 	//GzRender*  m_pRender;		// the renderer
 	//GzInput*   m_pUserInput;
 	char* m_pFrameBuffer;	// Frame Buffer

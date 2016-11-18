@@ -6,7 +6,7 @@
 #include "RayTracingEngine.h"
 #include "ApplicationEngine.h"
 #include "gz.h"
-#include "disp.h"
+#include "GzDisplay.h"
 //#include "rend.h"
 
 #ifdef _DEBUG
@@ -70,7 +70,7 @@ int ApplicationEngine::Initialize()
     //Only need one framebuffer, but AAKERNEL_SIZE displays and renderers
     status = status || GzNewFrameBuffer(m_pFrameBuffer, m_nWidth, m_nHeight);
 
-    //status = status || GzNewDisplay(&m_pDisplay, m_nWidth, m_nHeight);
+    status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{
@@ -236,10 +236,11 @@ int ApplicationEngine::Render()
     //GzCoord		normalList[3];	/* vertex normals */ 
     //GzTextureIndex  	uvList[3];		/* vertex texture map indices */ 
     //char		dummy[256]; 
-    int status(0); 
+    int status(GZ_SUCCESS); 
 
 
-    /* Initialize Display */
+    // Initialize Display
+    m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
     //status |= GzInitDisplay(m_pDisplay); 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{
@@ -261,14 +262,14 @@ int ApplicationEngine::Render()
         AfxMessageBox( "The input file was not opened\n" );
         return GZ_FAILURE;
     }
-
+    */
     FILE *outfile;
     if( (outfile  = fopen( OUTFILE , "wb" )) == NULL )
     {
         AfxMessageBox( "The output file was not opened\n" );
         return GZ_FAILURE;
     }
-
+    /*
     int	ulx, uly, lrx, lry, r, g, b;
     while( fscanf(infile, "%d %d %d %d %d %d %d", &ulx, &uly, &lrx, &lry, &r, &g, &b) == 7) { 
         for (int j = uly; j <= lry; j++) {
@@ -338,7 +339,8 @@ int ApplicationEngine::Render()
 
     //GzFlushDisplay2File(outfile, m_pDisplay); 	/* write out or update display to file*/
     //GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay);	// write out or update display to frame buffer
-
+    m_pDisplay->flush2File(outfile);
+    m_pDisplay->flush2FrameBuffer(m_pFrameBuffer);
     /* 
      * Close file
      */ 
@@ -360,7 +362,7 @@ int ApplicationEngine::Clean()
     /* 
      * Clean up and exit 
      */ 
-    int	status(0); 
+    int	status(GZ_SUCCESS); 
 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{
@@ -369,6 +371,8 @@ int ApplicationEngine::Clean()
     //}
     //status |= GzFreeRender(m_pRender); 
     //status |= GzFreeDisplay(m_pDisplay);
+    delete m_pDisplay;
+    m_pDisplay = nullptr;
     //status |= GzFreeTexture();
 
     return(status);

@@ -9,7 +9,7 @@ class GzCamera
 {
 public:
 // attributes
-    GzVector3 position, front, up, right;
+    GzVector3 position, face, up, right;
     float fovScale;
 // constructors
     GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, -1), with FOV as 90 degree.

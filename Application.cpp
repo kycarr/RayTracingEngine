@@ -16,8 +16,8 @@
 
 Application::Application()
 {
-	m_pDisplay = nullptr;		// the display
-	m_pRender = nullptr;		// the renderer
+	//m_pDisplay = nullptr;		// the display
+	//m_pRender = nullptr;		// the renderer
 	//m_pUserInput = nullptr;
 	m_pFrameBuffer = nullptr;
 }

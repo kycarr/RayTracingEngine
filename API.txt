@@ -8,10 +8,10 @@ class GzVector3
 // methods
     float length() const;
     GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
-    GzVector3 negate() const; // Return the negative of this vector.
+    GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;
     GzVector3 crossMultiply(const GzVector3 &cross) const;
-}
+};
 // operator overloads
 GzVector3 operator+(const GzVector3 &add1, const GzVector3 &add2);
 GzVector3 operator-(const GzVector3 &minus1, const GzVector3 &minus2);
@@ -26,7 +26,7 @@ class GzMatrix
     GzMatrix(float arc, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
 // methods
     GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
-}
+};
 // operator overloads
 GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
 GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
@@ -49,7 +49,7 @@ class GzColor
     const static GzColor CYAN;
     const static GzColor MAGENTA;
     const static GzColor YELLOW;
-}
+};
 // operator overloads
 GzColor operator+(const GzColor &c1, const GzColor &c2);
 GzColor operator*(const GzColor &c1, float s);
@@ -63,14 +63,14 @@ class GzRay
     GzRay(const GzVector3 &p, const GzVector3 &d);
 // methods
     GzVector3 getPoint(float distance) const;
-}
+};
 
 class GzGeometry
 {
     // base class, will be inherited by other geometry classes
     //methods: virtual IntersectResult intersect(GzRay);
     // not decided
-}
+};
 
 class IntersectResult
 {
@@ -85,22 +85,44 @@ class IntersectResult
     shade(GzLight[]); // not decided
 // static members
     const static IntersectResult NOHIT;
-}
+};
 
 class GzCamera
 {
 // attributes
-    GzVector3 position, front, up, right;
+    GzVector3 position, face, up, right;
     float fovScale;
 // constructors
     GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, -1), with FOV as 90 degree.
     GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
 // methods
     GzRay generateRay(float ndcx, float ndcy) const;
-}
+};
 
 class GzLight
 {
     attributes: GzVector position;
                 int type; // 0 for directional, 1 for point light
-}
+};
+
+class GzPixel
+{
+// attributes
+    unsigned short red, green, blue, alpha;
+// constructors
+    GzPixel(); // Default constructor. Build a black pixel.
+    GzPixel(unsigned int a_r, a_g, a_b, a_a = 4095);
+    GzPixel(const GzColor &pixelColor);
+// static method
+    static unsigned short ctoi(float color);
+};
+
+class GzDisplay
+{
+// attributes
+    short xres, yres;
+// constructors
+    GzDisplay(); // Default constructor. Build a display with max resolutions.
+    GzDisplay(int a_xRes, a_yRes);
+    ~GzDisplay();
+};

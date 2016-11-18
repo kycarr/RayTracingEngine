@@ -4,7 +4,7 @@
 //#include <iostream>
 
 GzCamera::GzCamera() :
-    position(0.0f, 0.0f, 0.0f), face(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f), fovScale(1.0f)
+    position(0.0f, 0.0f, 0.0f), face(0.0f, 0.0f, 1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f), fovScale(1.0f)
 {
 //    std::cout << "Default camera called" << std::endl;
 }

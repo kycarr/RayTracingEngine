@@ -5,9 +5,10 @@
 //                  only need to include this header to use all the API.
 
 #include "GzVector3.h"
-#include "GzColor.h"
 #include "GzRay.h"
+#include "GzColor.h"
 #include "GzCamera.h"
+#include "GzPixel.h"
 
 // universal constants
 

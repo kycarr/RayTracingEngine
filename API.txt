@@ -3,16 +3,16 @@ class GzVector3
 // attributes
     float x, y, z;
 // constructors
-    GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
     GzVector3(float a_x, float a_y, float a_z);
+    GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
 // methods
     float length() const;
-    GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
+    GzVector3 normalize() const; // Return the normalized vector, without changing `this` object. If `this` vector is zero, return a zero vector.
     GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;
     GzVector3 crossMultiply(const GzVector3 &cross) const;
 };
-// operator overloads
+// operator overloads with normal function
 GzVector3 operator+(const GzVector3 &add1, const GzVector3 &add2);
 GzVector3 operator-(const GzVector3 &minus1, const GzVector3 &minus2);
 GzVector3 operator*(const GzVector3 &v1, float times);
@@ -20,24 +20,26 @@ GzVector3 operator*(float times, const GzVector3 &v1);
 
 class GzMatrix
 {
+// attributes (private)
+    
 // constructors
     GzMatrix(); // Default constructor. Build an identity matrix in 4-dimensional space.
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
-    GzMatrix(float arc, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
+    GzMatrix(float angle, int axis); // Build a rotation matrix: rotate `angle` degree along an axis, 0 for x axis, 1 for y, 2 for z.
 // methods
     GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
+// operator overloads with friend function
+    friend GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
+    friend GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
 };
-// operator overloads
-GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
-GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
 
 class GzColor
 {
 // attributes
     float r, g, b;
 // constructors
-    GzColor(); // Default constructor. Build a black GzColor object.
     GzColor(float a_r, float a_g, float a_b);
+    GzColor(); // Default constructor. Build a black GzColor object.
 // methods
     GzColor modulate(const GzColor &other) const;
 // static members
@@ -50,17 +52,18 @@ class GzColor
     const static GzColor MAGENTA;
     const static GzColor YELLOW;
 };
-// operator overloads
+// operator overloads with normal function
 GzColor operator+(const GzColor &c1, const GzColor &c2);
 GzColor operator*(const GzColor &c1, float s);
+GzColor operator*(float s, const GzColor &c1);
 
 class GzRay
 {
 // attributes
     GzVector3 origin, direction;
 // constructors
-    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
     GzRay(const GzVector3 &p, const GzVector3 &d);
+    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
 // methods
     GzVector3 getPoint(float distance) const;
 };
@@ -93,8 +96,8 @@ class GzCamera
     GzVector3 position, face, up, right;
     float fovScale;
 // constructors
-    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, -1), with FOV as 90 degree.
     GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
+    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, 1), with FOV as 90 degree.
 // methods
     GzRay generateRay(float ndcx, float ndcy) const;
 };
@@ -110,9 +113,9 @@ class GzPixel
 // attributes
     unsigned short red, green, blue, alpha;
 // constructors
-    GzPixel(); // Default constructor. Build a black pixel.
-    GzPixel(unsigned int a_r, a_g, a_b, a_a = 4095);
+    GzPixel(unsigned int a_r, unsigned int a_g, unsigned int a_b, unsigned int a_a = 4095u);
     GzPixel(const GzColor &pixelColor);
+    GzPixel(); // Default constructor. Build a black pixel.
 // methods
     void putColor(const GzColor &pixelColor);
 // static methods
@@ -122,17 +125,18 @@ class GzPixel
 class GzDisplay
 {
 // constructors
-    GzDisplay(); // Default constructor. Build a display with max resolutions.
     GzDisplay(int a_xRes, a_yRes);
+    GzDisplay(); // Default constructor. Build a display with max resolutions.
+// destructor
     ~GzDisplay();
 // methods
-    int index(int i, int j);
+    int index(int i, int j) const;
     int init(const GzColor &back);
     void putDisplay(int i, int j, const GzPixel &p);
     void putDisplay(int i, int j, const GzColor &c);
-    int getDisplay(int i, int j, GzPixel &get);
-    int flush2File(FILE* outfile);
-    int flush2FrameBuffer(char* framebuffer);
+    int getDisplay(int i, int j, GzPixel &get) const;
+    int flush2File(FILE* outfile) const;
+    int flush2FrameBuffer(char* framebuffer) const;
 // static members
     const static short MAXXRES;
     const static short MAXYRES;

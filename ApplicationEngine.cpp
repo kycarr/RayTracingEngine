@@ -241,6 +241,19 @@ int ApplicationEngine::Render()
 
     // Initialize Display
     m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
+
+    for (int j = 0; j < m_nHeight/2; ++j)
+    {
+        for (int i = 0; i < m_nWidth/2; ++i)
+        {
+            int yj = j + m_nHeight / 4;
+            int xi = i + m_nWidth / 4;
+            //float ndcx = xi * 2.0f / m_nWidth - 1;
+            //float ndcy = -(yj * 2.0f / m_nHeight - 1);
+            m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
+        }
+    }
+    
     //status |= GzInitDisplay(m_pDisplay); 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{

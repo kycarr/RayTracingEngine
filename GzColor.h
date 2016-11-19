@@ -3,7 +3,6 @@
 //
 // GzColor.h        The definition of class GzColor
 //
-#include "gz.h"
 
 class GzColor
 {
@@ -14,7 +13,7 @@ public:
     GzColor(); // Default constructor, build a black GzColor object
     GzColor(float a_r, float a_g, float a_b);
 // methods
-    GzColor& modulate(const GzColor &other) const;
+    GzColor modulate(const GzColor &other) const;
 // static members
     const static GzColor BLACK;
     const static GzColor WHITE;
@@ -27,7 +26,8 @@ public:
 };
 
 // operator overloads
-GzColor& operator+(const GzColor &c1, const GzColor &c2);
-GzColor& operator*(const GzColor &c1, float s);
+GzColor operator+(const GzColor &c1, const GzColor &c2);
+GzColor operator*(const GzColor &c1, float s);
+GzColor operator*(float s, const GzColor &c1);
 
 #endif

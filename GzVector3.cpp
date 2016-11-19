@@ -1,3 +1,4 @@
+#include "stdafx.h"
 //
 //  GzVector3.cpp
 //
@@ -40,7 +41,7 @@ GzVector3 GzVector3::normalize() const
     if (normalLength == 0.0f) return GzVector3();
     return GzVector3(x/normalLength, y/normalLength, z/normalLength);
 }
-GzVector3 GzVector3::negate() const
+GzVector3 GzVector3::flip() const
 {
     return GzVector3(-x, -y, -z);
 }

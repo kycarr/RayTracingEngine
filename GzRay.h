@@ -3,7 +3,7 @@
 
 // GzRay.h          The definition of class GzRay
 
-#include "gz.h"
+#include "GzVector3.h"
 
 class GzRay
 {

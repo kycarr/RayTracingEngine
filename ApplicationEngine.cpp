@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "RayTracingEngine.h"
 #include "ApplicationEngine.h"
-#include "gz.h"
+//#include "gz.h"
 #include "GzDisplay.h"
 //#include "rend.h"
 
@@ -220,7 +220,22 @@ int ApplicationEngine::Initialize()
         //status |= GzPushMatrix(AArenders_list[i], rotateY);
         //status |= GzPushMatrix(AArenders_list[i], rotateX);
     //}
+    //**********************
+    // Same routine. Set up camera, lights for our renderer
+    // in this initialize function, like
+    //```
+    //renderer.putAttribute(camera);
 
+    //renderer.putAttribute(lights);
+    //renderer.putAttribute(AAmethod); //optional
+    //renderer.putAttribute(refractionmode); //optional
+    //renderer.putAttribute(diffusemode); //optional
+    //renderer.putAttribute(arealightmode); //optional
+    //```
+    // Still need tokens. But might be quite different from original.
+    // Pass pointers and boolean values to renderer. And do
+    // rendering inside Render() function.
+    //************************
     if (status)
     {
         AfxMessageBox("Initiating went wrong!\n");
@@ -242,6 +257,7 @@ int ApplicationEngine::Render()
     // Initialize Display
     m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
 
+    // Test display
     for (int j = 0; j < m_nHeight/2; ++j)
     {
         for (int i = 0; i < m_nWidth/2; ++i)
@@ -253,7 +269,9 @@ int ApplicationEngine::Render()
             m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
         }
     }
-    
+   
+
+
     //status |= GzInitDisplay(m_pDisplay); 
     //for (int i = 0; i < AAKERNEL_SIZE; ++i)
     //{
@@ -282,6 +300,20 @@ int ApplicationEngine::Render()
         AfxMessageBox( "The output file was not opened\n" );
         return GZ_FAILURE;
     }
+
+    //*******************************
+    //constructScene(inFile);
+    //renderer.putAttribute(scene);
+    //if (renderer.isReady())
+    //{
+    //  renderer.renderToDisplay();
+    //}
+    //else
+    //{
+    //  AfxMessageBox("Rendering went wrong!\n");
+    //}
+    //*******************************
+
     /*
     int	ulx, uly, lrx, lry, r, g, b;
     while( fscanf(infile, "%d %d %d %d %d %d %d", &ulx, &uly, &lrx, &lry, &r, &g, &b) == 7) { 

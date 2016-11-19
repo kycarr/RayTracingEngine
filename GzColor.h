@@ -3,7 +3,6 @@
 //
 // GzColor.h        The definition of class GzColor
 //
-#include "gz.h"
 
 class GzColor
 {

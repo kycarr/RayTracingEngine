@@ -1,4 +1,5 @@
 #include "stdafx.h" // if testing with console program, comment this line out
+#include "GzConstants.h"
 #include "GzCamera.h"
 #include <cmath>
 //#include <iostream>

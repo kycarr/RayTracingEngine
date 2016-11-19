@@ -4,14 +4,17 @@
 // GzDisplay.h      CS580 Project Display for windows MFC
 //
 
-#include "gz.h"
+//#include "gz.h"
+//
+#include "GzConstants.h"
+#include "GzColor.h"
 #include "GzPixel.h"
 
 class GzDisplay
 {
-    short xres, yres;
     GzPixel *fbuf;
 public:
+    short xres, yres;
     GzDisplay();
     GzDisplay(int a_xRes, int a_yRes);
     ~GzDisplay();

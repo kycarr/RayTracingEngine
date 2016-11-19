@@ -3,7 +3,7 @@
 //
 // GzPixel.h        Class definition for one pixel.
 
-#include "gz.h"
+#include "GzColor.h"
 
 class GzPixel
 {

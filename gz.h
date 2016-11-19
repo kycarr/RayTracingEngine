@@ -4,19 +4,13 @@
 // gz.h             Contains all the basic classes header files,
 //                  only need to include this header to use all the API.
 
+#include "GzConstants.h"
 #include "GzVector3.h"
-#include "GzRay.h"
 #include "GzColor.h"
-#include "GzCamera.h"
+#include "GzRay.h"
 #include "GzPixel.h"
+#include "GzCamera.h"
 
-// universal constants
-
-// int values used as status indicators
-const int GZ_SUCCESS(0);
-const int GZ_FAILURE(1);
-// for math calculations
-const double PI(3.1415926535897932);
 
 //
 // name list tokens
@@ -117,7 +111,6 @@ typedef int GzDepth;
 //#define Z       2
 //const int W(3);
 //const int COORD3_BOUND(3);
-const int COORD4_BOUND(4);
 
 //const int VA(0);
 //const int VB(1);

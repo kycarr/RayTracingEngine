@@ -3,7 +3,9 @@
 
 // GzCamera.h       The definition of class GzCamera
 
-#include "gz.h"
+#include "GzVector3.h"
+#include "GzRay.h"
+//#include "gz.h"
 
 class GzCamera
 {

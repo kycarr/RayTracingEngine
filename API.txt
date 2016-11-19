@@ -124,6 +124,8 @@ class GzPixel
 
 class GzDisplay
 {
+// attributes
+    short xres, yres;
 // constructors
     GzDisplay(int a_xRes, a_yRes);
     GzDisplay(); // Default constructor. Build a display with max resolutions.

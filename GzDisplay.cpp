@@ -93,7 +93,6 @@ int GzDisplay::getDisplay(int i, int j, GzPixel &get) const
     if (i >= 0 && i < this->xres && j >= 0 && j < this->yres)
     {
         get = this->fbuf[index(i, j)];
-        //TODO: test if copied. should not redirect reference
         return GZ_SUCCESS;
     }
     return GZ_FAILURE;

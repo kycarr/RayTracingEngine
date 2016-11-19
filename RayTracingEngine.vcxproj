@@ -181,12 +181,12 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationEngine.h" />
     <ClInclude Include="disp.h" />
-    <ClInclude Include="Geometry.h" />
     <ClInclude Include="gz.h" />
     <ClInclude Include="GzCamera.h" />
     <ClInclude Include="GzColor.h" />
+    <ClInclude Include="GzDisplay.h" />
     <ClInclude Include="GzLight.h" />
-    <ClInclude Include="GzMatrix.hpp" />
+    <ClInclude Include="GzPixel.h" />
     <ClInclude Include="GzRay.h" />
     <ClInclude Include="GzVector3.h" />
     <ClInclude Include="MainFrm.h" />
@@ -194,7 +194,6 @@
     <ClInclude Include="RayTracingEngine.h" />
     <ClInclude Include="RayTracingEngineDoc.h" />
     <ClInclude Include="RayTracingEngineView.h" />
-    <ClInclude Include="rend.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -202,13 +201,14 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationEngine.cpp" />
-    <ClCompile Include="disp.cpp" />
     <ClCompile Include="GzCamera.cpp" />
     <ClCompile Include="GzColor.cpp" />
-    <ClCompile Include="GzMatrix.cpp" />
+    <ClCompile Include="GzDisplay.cpp" />
+    <ClCompile Include="GzLight.cpp" />
+    <ClCompile Include="GzMaterial.cpp" />
+    <ClCompile Include="GzPixel.cpp" />
     <ClCompile Include="GzRay.cpp" />
     <ClCompile Include="GzVector3.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="RayTracingEngine.cpp" />
     <ClCompile Include="RayTracingEngineDoc.cpp" />

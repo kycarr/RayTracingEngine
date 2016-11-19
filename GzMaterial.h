@@ -3,7 +3,7 @@
 //
 // GzMaterial.h     Represents the material of a Geometry object
 // 
-#include "gz.h"
+#include "GzColor.h"
 
 class GzMaterial
 {
@@ -20,14 +20,4 @@ public:
     // constructors
     GzMaterial(GzColor kd, GzColor ka, GzColor ks, float S,  float r);
 };
-
-// Constructor makes a new material with the given diffuse, ambient, and specular properties
-GzMaterial::GzMaterial(GzColor kd, GzColor ka, GzColor ks, float S,  float r)
-{
-    Kd = kd;
-    Ka = ka;
-    Ks = ks;
-	s  =  S;    // for (N*L)^s , specular
-	reflectiveness = r; // reflect ray amplitue
-}
 #endif

@@ -2,7 +2,12 @@
 #include "GzMaterial.h"
 
 // Constructor makes a new material with the given diffuse, ambient, and specular properties
-GzMaterial::GzMaterial(GzColor kd, GzColor ka, GzColor ks, float S, float r) :
-    Kd(kd), Ka(ka), Ks(ks), s(S), reflectiveness(r)
+GzMaterial::GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s, float a_r) :
+    Kd(kd), Ka(ka), Ks(ks), s(a_s), reflectiveness(a_r)
+{
+    // Add more code for texture mapping, normal mapping later.
+}
+
+GzMaterial::GzMaterial() : GzMaterial(GzColor::BLACK, GzColor::BLACK, GzColor::WHITE, 10.0f, 0.0f)
 {
 }

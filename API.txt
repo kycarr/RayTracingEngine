@@ -1,3 +1,11 @@
+// int values used as status indicators
+const int GZ_SUCCESS(0);
+const int GZ_FAILURE(1);
+// for math calculations
+const double PI(3.1415926535897932);
+// for magic numbers
+const int COORD4_BOUND(4);
+
 class GzVector3
 {
 // attributes
@@ -33,6 +41,29 @@ class GzMatrix
     friend GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
 };
 
+class GzRay
+{
+// attributes
+    GzVector3 origin, direction;
+// constructors
+    GzRay(const GzVector3 &p, const GzVector3 &d);
+    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
+// methods
+    GzVector3 getPoint(float distance) const;
+};
+
+class GzCamera
+{
+// attributes
+    GzVector3 position, face, up, right;
+    float fovScale;
+// constructors
+    GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
+    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, 1), with FOV as 90 degree.
+// methods
+    GzRay generateRay(float ndcx, float ndcy) const;
+};
+
 class GzColor
 {
 // attributes
@@ -57,15 +88,18 @@ GzColor operator+(const GzColor &c1, const GzColor &c2);
 GzColor operator*(const GzColor &c1, float s);
 GzColor operator*(float s, const GzColor &c1);
 
-class GzRay
+class GzPixel
 {
 // attributes
-    GzVector3 origin, direction;
+    unsigned short red, green, blue, alpha;
 // constructors
-    GzRay(const GzVector3 &p, const GzVector3 &d);
-    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
+    GzPixel(unsigned int a_r, unsigned int a_g, unsigned int a_b, unsigned int a_a = 4095u);
+    GzPixel(const GzColor &pixelColor);
+    GzPixel(); // Default constructor. Build a black pixel.
 // methods
-    GzVector3 getPoint(float distance) const;
+    void putColor(const GzColor &pixelColor);
+// static methods
+    static unsigned short ctoi(float color);
 };
 
 class GzGeometry
@@ -90,36 +124,35 @@ class IntersectResult
     const static IntersectResult NOHIT;
 };
 
-class GzCamera
+class GzMaterial
 {
 // attributes
-    GzVector3 position, face, up, right;
-    float fovScale;
+    GzColor Kd;   // diffuse color
+    GzColor Ka;   // ambient color
+    // We might not need Ka at all later for our project. We can keep it now.
+    GzColor Ks;   // specular color
+	float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
+                  // add texture component later
+                  // add refractive index later
+	float reflectiveness;
+
 // constructors
-    GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
-    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, 1), with FOV as 90 degree.
-// methods
-    GzRay generateRay(float ndcx, float ndcy) const;
+    GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
+    GzMaterial();
 };
 
 class GzLight
 {
-    attributes: GzVector position;
-                int type; // 0 for directional, 1 for point light
-};
-
-class GzPixel
-{
 // attributes
-    unsigned short red, green, blue, alpha;
+    int type;           // 0 for directional, 1 for point
+    GzVector3 position; // position if point light, direction if directional light
+    GzColor color;      // the color of the light
 // constructors
-    GzPixel(unsigned int a_r, unsigned int a_g, unsigned int a_b, unsigned int a_a = 4095u);
-    GzPixel(const GzColor &pixelColor);
-    GzPixel(); // Default constructor. Build a black pixel.
-// methods
-    void putColor(const GzColor &pixelColor);
-// static methods
-    static unsigned short ctoi(float color);
+    GzLight(int t, GzVector3 pos,  GzColor col);
+    GzLight(int t, GzVector3 pos); // Build a white light.
+    GzLight(); // Default constructur; Build a directional light from the direction of (0, 1, 0).
+// need extension for area light later.
+    //GzRectangle * rect;
 };
 
 class GzDisplay

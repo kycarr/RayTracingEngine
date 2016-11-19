@@ -13,7 +13,9 @@ public:
     GzVector3 position; // position if point light, direction if directional light
     GzColor color;      // the color of the light
 
-    GzLight(int t, GzVector3 pos);
-    GzLight(int t, GzVector3 pos,  GzColor col);
+    GzLight(int t, const GzVector3 &pos);
+    GzLight(int t, const GzVector3 &pos, const GzColor &col);
+    GzLight(); // Default constructur; Build a directional light from the direction of (0, 1, 0).
+// need extension for area light later.
 };
 #endif

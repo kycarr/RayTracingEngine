@@ -180,7 +180,6 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationEngine.h" />
-    <ClInclude Include="disp.h" />
     <ClInclude Include="gz.h" />
     <ClInclude Include="GzCamera.h" />
     <ClInclude Include="GzColor.h" />

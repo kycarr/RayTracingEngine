@@ -9,6 +9,8 @@
 //#include "GzDisplay.h"
 //#include "GzRender.h"
 
+#include <cstdio>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -51,6 +53,11 @@ int ApplicationEngine::Initialize()
 
     status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
 
+    GzLight lTemp1;
+    GzLight lTemp2(1, GzVector3(10.0f, 10.0f, -10));
+    GzLight lTemp3(0, GzVector3(10.0f, 10.0f, -10), GzColor::CYAN);
+    GzMaterial mTemp1;
+    GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
     // We'll do AA in renderer directly.
     //
     //**********************
@@ -106,7 +113,7 @@ int ApplicationEngine::Render()
     //}
     //
     FILE *outfile;
-    if( (outfile  = fopen( OUTFILE , "wb" )) == NULL )
+    if( (outfile  = std::fopen( OUTFILE , "wb" )) == NULL )
     {
         AfxMessageBox(_T("The output file was not opened\n"));
         return GZ_FAILURE;

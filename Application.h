@@ -5,8 +5,8 @@
 #pragma once
 
 #include "gz.h"
-#include "disp.h"
-#include "rend.h"
+#include "GzDisplay.h"
+//#include "rend.h"
 
 class Application  
 {
@@ -16,7 +16,7 @@ public:
 	
 public:
 	GzDisplay* m_pDisplay;		// the display
-	GzRender*  m_pRender;		// the renderer
+	//GzRender*  m_pRender;		// the renderer
 	//GzInput*   m_pUserInput;
 	char* m_pFrameBuffer;	// Frame Buffer
 	int   m_nWidth;			// width of Frame Buffer

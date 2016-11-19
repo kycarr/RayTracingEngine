@@ -1,168 +1,18 @@
-/*
- * Gz.h - include file for the cs580 rendering library
- */
-//tuo piao123
 #ifndef GZ_H
 #define GZ_H
-/*
- * universal constants
- */
-const int GZ_SUCCESS(0);
-const int GZ_FAILURE(1);
 
-// Make all the following #define preprocessing instructions as const int declarations. --Jialiu
-/*
- * name list tokens
- */
-#define GZ_NULL_TOKEN        0 /* triangle vert attributes */
-#define GZ_POSITION          1
-#define GZ_NORMAL            2
-#define GZ_TEXTURE_INDEX     3
+// gz.h             Contains all the basic classes header files,
+//                  only need to include this header to use all the API.
 
-#define AAKERNEL_SIZE 6
-#define GZ_AASHIFTX 44 /* antialiasing screen offset */
-#define GZ_AASHIFTY 45 /* antialiasing screen offset */
+#include "GzConstants.h"
+#include "GzVector3.h"
+#include "GzColor.h"
+#include "GzRay.h"
+#include "GzPixel.h"
+#include "GzCamera.h"
+#include "GzMaterial.h"
+#include "GzLight.h"
+#include "GzDisplay.h"
 
-/* renderer-state default pixel color */
-#define GZ_RGB_COLOR            99
-
-#define GZ_INTERPOLATE 95 /* define interpolation mode */
-
-#define GZ_DIRECTIONAL_LIGHT 79 /* directional light */
-#define GZ_AMBIENT_LIGHT  78 /* ambient light type */
-
-#define GZ_AMBIENT_COEFFICIENT  1001 /* Ka material property */
-#define GZ_DIFFUSE_COEFFICIENT  1002 /* Kd material property */
-#define GZ_SPECULAR_COEFFICIENT  1003 /* Ks material property */
-#define GZ_DISTRIBUTION_COEFFICIENT 1004 /* specular power of material */
-
-#define GZ_TEXTURE_MAP   1010    /* pointer to texture routine */
-/*
- * flags fields for value list attributes
- */
-
-/* select interpolation mode of the shader (only one) */
-#define GZ_FLAT  0  /* flat shading with GZ_RBG_COLOR */
-#define GZ_COLOR   1 /* interpolate vertex color */
-#define GZ_NORMALS   2 /* interpolate normals */
-
-/*
-typedef int     GzToken;
-typedef void    *GzPointer;
-typedef float   GzColor[3];
-typedef short   GzIntensity;  // 0 - 4095 in lower 12-bits
-typedef float   GzCoord[3];
-typedef float   GzTextureIndex[2];
-typedef float   GzMatrix[4][4];
-typedef int GzDepth;
-*/
-
-// Redesign complex typedef's as classes and write proper methods
-// We need at least GzVector, GzTextureIndex, GzMatrix, GzColor classes
-// And we need to make new classes like GzRay, GzGeometry, GzMaterial etc. --Jialiu
-class GzColor
-{
-public:// If you don't like public attributes, make it private and declare accessing functions
-    float r, g, b;
-
-    GzColor();
-    GzColor(float a_r, float a_g, float a_b);
-
-    // This class automatically has a copy constructor.
-    // For example, you can use `GzColor anyVar(blue)` where blue is already a color object
-    friend GzColor operator+(const GzColor &c1, const GzColor &c2);
-    friend GzColor operator*(const GzColor &c1, float s);
-    GzColor modulate(GzColor);
-};
-
-// This constructor makes `GzColor anyVar;` constructing a black color object
-// Or `new GzColor()` returns a pointer to black color object
-GzColor::GzColor() :
-    r(0.0f), g(0.0f), b(0.0f)
-{
-}
-
-// This constructor makes `GzColor anyVar(a, b, c);` constructing a color object
-// And you can use somehow more familiar format `new GzColor(a, b, c)` to return a pointer
-GzColor::GzColor(float a_r, float a_g, float a_b) :
-    r(a_r), g(a_g), b(a_b)
-{
-}
-
-// It's generally better to avoid copy initialization for a class, such as `GzColor anyVar = GzColor(0, 0, 1);`.
-// You can use `GzColor anyVar(0, 0, 1);` or in C++11 `GzColor anyVar {0, 0, 1};` instead.
-
-// This operator overloading enables us to do things like `GzColor anyVar(blue + red);`
-// And the code above is an example to use copy constructor  ^^^^^^^^^^^^^^^^^^^^^^
-GzColor operator+(const GzColor &c1, const GzColor &c2)
-{
-    return GzColor(c1.r + c2.r, c1.g + c2.g, c1.b + c2.b);
-}
-
-// This operator overloading enables us to do things like `GzColor grey(white * 0.1);`
-GzColor operator*(const GzColor &c1, float s)
-{
-    return GzColor(c1.r * s, c1.g * s, c1.b * s);
-}
-
-typedef int (*GzTexture)(float u, float v, GzColor color); /* pointer to texture sampling method */
-/* u,v parameters [0,1] are defined tex_fun(float u, float v, GzColor color) */
-
-/*
- * Gz camera definition
- */
-#ifndef GZCAMERA
-#define GZCAMERA
-typedef struct  GzCamera
-{
-  GzMatrix     Xiw;    /* xform from world to image space */
-  GzMatrix     Xpi;    /* perspective projection xform */
-  GzCoord      position;   /* position of image plane origin */
-  GzCoord      lookat;         /* position of look-at-point */
-  GzCoord      worldup;  /* world up-vector (almost screen up) */
-  float        FOV;            /* horizontal field of view */
-} GzCamera;
-#endif
-
-#ifndef GZLIGHT
-#define GZLIGHT
-typedef struct  GzLight
-{
-   GzCoord    direction;  /* vector from surface to light */
-   GzColor    color;  /* light color intensity */
-} GzLight;
-#endif
-
-#ifndef GZINPUT
-#define GZINPUT
-typedef struct  GzInput
-{
-   GzCoord            rotation;       /* object rotation */
-   GzCoord   translation; /* object translation */
-   GzCoord   scale;   /* object scaling */
-   GzCamera  camera;   /* camera */
-} GzInput;
-#endif
-
-#define RED     0        /* array indicies for color vector */
-#define GREEN   1
-#define BLUE    2
-const int COLOR_BOUND(3);
-
-#define X       0        /* array indicies for position vector*/
-#define Y       1
-#define Z       2
-const int W(3);
-const int COORD3_BOUND(3);
-const int COORD4_BOUND(4);
-
-const int VA(0);
-const int VB(1);
-const int VC(2);
-const int VERT_BOUND(3);
-
-#define U       0        /* array indicies for texture coords */
-#define V       1
-const int TEX_BOUND(2);
 
 #endif

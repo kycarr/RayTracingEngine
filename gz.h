@@ -10,6 +10,8 @@
 #include "GzRay.h"
 #include "GzPixel.h"
 #include "GzCamera.h"
+#include "GzMaterial.h"
+#include "GzLight.h"
 #include "GzDisplay.h"
 
 

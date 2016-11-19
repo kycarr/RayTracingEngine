@@ -175,7 +175,7 @@ void CRayTracingEngineView::OnRender()
     if (m_pApplication != nullptr)
         ((ApplicationEngine *)m_pApplication)->Render();
     else
-        AfxMessageBox("Application was not allocated\n");
+        AfxMessageBox(_T("Application was not allocated\n"));
 
     // Set window size
     CRect clientRect, windowRect;

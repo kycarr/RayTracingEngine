@@ -71,7 +71,7 @@ int ApplicationEngine::Initialize()
     //************************
     if (status)
     {
-        AfxMessageBox("Initiating went wrong!\n");
+        AfxMessageBox(_T("Initiating went wrong!\n"));
     }
     return(status);
 }
@@ -108,7 +108,7 @@ int ApplicationEngine::Render()
     FILE *outfile;
     if( (outfile  = fopen( OUTFILE , "wb" )) == NULL )
     {
-        AfxMessageBox( "The output file was not opened\n" );
+        AfxMessageBox(_T("The output file was not opened\n"));
         return GZ_FAILURE;
     }
 
@@ -139,11 +139,11 @@ int ApplicationEngine::Render()
 
     if( fclose( outfile ) )
     {
-        AfxMessageBox( "The output file was not closed\n" );
+        AfxMessageBox(_T("The output file was not closed\n"));
     }
     if (status)
     {
-        AfxMessageBox("Rendering went wrong!\n");
+        AfxMessageBox(_T("Rendering went wrong!\n"));
     }
     return(status); 
 }

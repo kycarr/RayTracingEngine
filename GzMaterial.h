@@ -1,14 +1,14 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
-// I'm unsure how our design will look (whether these will all be in one file or several files),
-// but if in several files the color class will need to be included here - Kayla
+//
+// GzMaterial.h     Represents the material of a Geometry object
+// 
+#include "gz.h"
 
-//#include Color.h      // GzColor
-
-// Represents the material of a Geometry object
 class GzMaterial
 {
 public:
+    // attributes
     GzColor Kd;   // diffuse color
     GzColor Ka;   // ambient color
     GzColor Ks;   // specular color
@@ -17,6 +17,7 @@ public:
                   // add refractive index later
 	float reflectiveness;
 
+    // constructors
     GzMaterial(GzColor kd, GzColor ka, GzColor ks, float S,  float r);
 };
 

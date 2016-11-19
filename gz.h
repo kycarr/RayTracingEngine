@@ -8,6 +8,8 @@
 #include "GzColor.h"
 #include "GzRay.h"
 #include "GzCamera.h"
+#include "GzMaterial.h"
+#include "GzLight.h"
 
 // universal constants
 

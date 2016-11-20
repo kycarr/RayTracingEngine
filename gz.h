@@ -6,10 +6,11 @@
 
 #include "GzConstants.h"
 #include "GzVector3.h"
-#include "GzColor.h"
+//#include "GzMatrix.h"
 #include "GzRay.h"
-#include "GzPixel.h"
 #include "GzCamera.h"
+#include "GzColor.h"
+#include "GzPixel.h"
 #include "GzMaterial.h"
 #include "GzLight.h"
 #include "GzDisplay.h"

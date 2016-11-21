@@ -43,7 +43,7 @@ float GzVector3::length() const
 GzVector3 GzVector3::normalize() const
 {
     float normalLength = this->length();
-    if (normalLength == 0.0f) return GzVector3();
+    if (normalLength == 0.0f) throw GzException();
     return GzVector3(x/normalLength, y/normalLength, z/normalLength);
 }
 GzVector3 GzVector3::flip() const

@@ -5,6 +5,7 @@
 // GzVector3.h
 
 // Created by Peter Piao on 11/16/16.
+#include "GzException.h"
 
 class GzVector3
 {
@@ -26,7 +27,7 @@ public:
 
     float lengthSqr() const;
     float length() const;
-    GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
+    GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, throw an exception of type GzException.
     GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;
     GzVector3 crossMultiply(const GzVector3 &cross) const;

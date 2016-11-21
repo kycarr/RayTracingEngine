@@ -25,5 +25,6 @@ GzRay GzCamera::generateRay(float ndcx, float ndcy) const
 
 GzVector3 schimidt(const GzVector3 &general, const GzVector3 &unit)
 {
+    // normalize() throws exception if general is parallel to unit
     return (general - general.dotMultiply(unit) * unit).normalize();
 }

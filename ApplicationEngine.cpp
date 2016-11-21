@@ -91,15 +91,22 @@ int ApplicationEngine::Render()
     m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
 
     // Test display
-    for (int j = 0; j < m_nHeight/2; ++j)
+    // Test Sphere
+    Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
+    GzCamera cam; // Test with default camera
+    for (int j = 0; j < m_nHeight; ++j)
     {
-        for (int i = 0; i < m_nWidth/2; ++i)
+        for (int i = 0; i < m_nWidth; ++i)
         {
-            int yj = j + m_nHeight / 4;
-            int xi = i + m_nWidth / 4;
-            //float ndcx = xi * 2.0f / m_nWidth - 1;
-            //float ndcy = -(yj * 2.0f / m_nHeight - 1);
-            m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
+            int yj = j;
+            int xi = i;
+            float ndcx = xi * 2.0f / m_nWidth - 1;
+            float ndcy = -(yj * 2.0f / m_nHeight - 1);
+            GzRay rForPixel = cam.generateRay(ndcx, ndcy);
+            if (s0.intersect(rForPixel).p_geometry)
+            {
+                m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
+            }
         }
     }
 

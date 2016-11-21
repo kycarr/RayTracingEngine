@@ -184,6 +184,7 @@
     <ClInclude Include="GzCamera.h" />
     <ClInclude Include="GzColor.h" />
     <ClInclude Include="GzDisplay.h" />
+    <ClInclude Include="GzGeometry.h" />
     <ClInclude Include="GzLight.h" />
     <ClInclude Include="GzPixel.h" />
     <ClInclude Include="GzRay.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="GzCamera.cpp" />
     <ClCompile Include="GzColor.cpp" />
     <ClCompile Include="GzDisplay.cpp" />
+    <ClCompile Include="GzGeometry.cpp" />
     <ClCompile Include="GzLight.cpp" />
     <ClCompile Include="GzMaterial.cpp" />
     <ClCompile Include="GzPixel.cpp" />

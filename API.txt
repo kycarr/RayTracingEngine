@@ -5,6 +5,7 @@ const int GZ_FAILURE(1);
 const double PI(3.1415926535897932);
 // for magic numbers
 const int COORD4_BOUND(4);
+// If you need more constants, add them here and in GzConstants.h.
 
 class GzVector3
 {
@@ -14,8 +15,8 @@ class GzVector3
     GzVector3(float a_x, float a_y, float a_z);
     GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
 // methods
-    float length() const;
     float lengthSqr() const;
+    float length() const;
     GzVector3 normalize() const; // Return the normalized vector, without changing `this` object. If `this` vector is zero, return a zero vector.
     GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;
@@ -36,7 +37,7 @@ class GzMatrix
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
     GzMatrix(float angle, int axis); // Build a rotation matrix: rotate `angle` degree along an axis, 0 for x axis, 1 for y, 2 for z.
 // methods
-    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
+    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Ignore translation.
 // operator overloads with friend function
     friend GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
     friend GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
@@ -113,12 +114,15 @@ class GzGeometry
 class IntersectResult
 {
 // attributes
-    GzGeometry geometry; // Should be a reference to the geometry at the point of intersecting.
-    float distance;
-    GzVector3 position, normal;
+    const GzGeometry *const p_geometry;
+    const float distance;
+    const GzVector3 position;
+    const GzVector3 normal;
+    const float u, v;
 // constructors
-    IntersectResult(); // Default constructor. Build an object that do not intersect.
-    IntersectResult(const GzGeometry &obj, float d, const GzVector3 &p, const GzVector3 &n);
+    // Pre: a_nor is a normalized vector. No checking inside.
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
+    IntersectResult();
 // methods
     shade(GzLight[]); // not decided
 // static members
@@ -140,6 +144,8 @@ class GzMaterial
 // constructors
     GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
     GzMaterial();
+// static member
+    const static GzMaterial DEFAULT;
 };
 
 class GzLight

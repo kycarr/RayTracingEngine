@@ -30,9 +30,14 @@ GzVector3::GzVector3() : GzVector3(0.0f, 0.0f, 0.0f)
 //    return *this;
 //}
 
+float GzVector3::lengthSqr() const
+{
+    return x * x + y * y + z * z;
+}
+
 float GzVector3::length() const
 {
-    return std::sqrt(x*x + y*y + z*z);
+    return std::sqrt(this->lengthSqr());
 }
 
 GzVector3 GzVector3::normalize() const

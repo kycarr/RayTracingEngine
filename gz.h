@@ -12,6 +12,7 @@
 #include "GzColor.h"
 #include "GzPixel.h"
 #include "GzMaterial.h"
+#include "GzGeometry.h"
 #include "GzLight.h"
 #include "GzDisplay.h"
 

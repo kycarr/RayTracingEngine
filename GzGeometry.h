@@ -1,0 +1,62 @@
+#ifndef GZGEOMETRY_H
+#define GZGEOMETRY_H
+
+#include "GzVector3.h"
+#include "GzRay.h"
+#include "GzMaterial.h"
+
+class GzGeometry;
+
+class IntersectResult
+{
+public:
+    const GzGeometry *const p_geometry;
+    const float distance;
+    const GzVector3 position;
+    const GzVector3 normal;
+    //const float u, v;
+
+    // Pre: a_nor is a normalized vector. No checking inside.
+    //IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor);
+    IntersectResult();
+
+    const static IntersectResult NOHIT;
+};
+
+class GzGeometry // Base class
+{
+public:
+    GzMaterial material;
+    GzGeometry(const GzMaterial &a_mater);
+    GzGeometry(); // Default constructor. Builds with default material.
+    virtual IntersectResult intersect(const GzRay &ray) const = 0;
+    //virtual void transform(const GzMatrix &mat) = 0; // This method modifies the geometry according to a general transformation matrix.
+};
+
+class Sphere: public GzGeometry
+{
+public:
+// attributes
+    GzVector3 center;
+    GzVector3 arctic; // Arctic point, theta = 0, phi = any
+    GzVector3 long_x; // Point for longitute calculation, theta = 90, phi = 0
+    GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
+// constructors
+    Sphere();
+    Sphere(const GzVector3 &c, float radius,
+            const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
+            const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
+            const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+protected:
+// static methods
+    static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
+};
+
+//class Ellipsoid: public Sphere
+//{
+//};
+#endif
+

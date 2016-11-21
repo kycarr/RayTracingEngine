@@ -24,6 +24,7 @@ public:
 
     //GzVector3& operator=(const GzVector3 &vc);
 
+    float lengthSqr() const;
     float length() const;
     GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
     GzVector3 flip() const; // Return the negative of this vector.

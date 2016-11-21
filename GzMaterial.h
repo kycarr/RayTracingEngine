@@ -21,6 +21,8 @@ public:
     // constructors
     GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
     GzMaterial();
+    // static member
+    const static GzMaterial DEFAULT;
 };
 #endif
 

@@ -11,3 +11,5 @@ GzMaterial::GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, 
 GzMaterial::GzMaterial() : GzMaterial(GzColor::BLACK, GzColor::BLACK, GzColor::WHITE, 10.0f, 0.0f)
 {
 }
+
+const GzMaterial GzMaterial::DEFAULT(GzColor(0.5f, 0.5f, 0.5f), GzColor::BLACK, GzColor::WHITE, 10.0f, 0.0f);

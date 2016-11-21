@@ -15,6 +15,7 @@ class GzVector3
     GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
 // methods
     float length() const;
+    float lengthSqr() const;
     GzVector3 normalize() const; // Return the normalized vector, without changing `this` object. If `this` vector is zero, return a zero vector.
     GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;

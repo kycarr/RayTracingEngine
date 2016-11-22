@@ -253,6 +253,8 @@ class GzRender
 {
 // attributes (private, lots of)
 // constructors
-    GzRender() = delete; // Default constructor. Disabled.
+private:
+    GzRender(); // Default constructor. Disabled by using private.
+public:
     GzRender(const GzDisplay *p_disp);
 };

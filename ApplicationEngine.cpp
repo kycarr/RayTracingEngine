@@ -44,38 +44,46 @@ int ApplicationEngine::Initialize()
     //float		specpower;
     int status(GZ_SUCCESS); 
 
-    // m_nWidth and m_nHeight are variables inherited from Application class.
-    m_nWidth = 256;		// frame buffer and display width
-    m_nHeight = 256;    // frame buffer and display height
+    try
+    {
+        // m_nWidth and m_nHeight are variables inherited from Application class.
+        m_nWidth = 256;		// frame buffer and display width
+        m_nHeight = 256;    // frame buffer and display height
 
-    // Initialize frame buffer and display
-    status = status || GzNewFrameBuffer(m_pFrameBuffer, m_nWidth, m_nHeight);
+        // Initialize frame buffer and display
+        status = status || GzNewFrameBuffer(m_pFrameBuffer, m_nWidth, m_nHeight);
 
-    status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
+        status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
 
-    GzLight lTemp1;
-    GzLight lTemp2(1, GzVector3(10.0f, 10.0f, -10));
-    GzLight lTemp3(0, GzVector3(10.0f, 10.0f, -10), GzColor::CYAN);
-    GzMaterial mTemp1;
-    GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
-    // We'll do AA in renderer directly.
-    //
-    //**********************
-    // Same routine. Set up camera, lights for our renderer
-    // in this initialize function, like
-    //```
-    //renderer.putAttribute(camera);
+        GzLight lTemp1;
+        GzLight lTemp2(1, GzVector3(10.0f, 10.0f, -10));
+        GzLight lTemp3(0, GzVector3(10.0f, 10.0f, -10), GzColor::CYAN);
+        GzMaterial mTemp1;
+        GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
+        // We'll do AA in renderer directly.
+        //
+        //**********************
+        // Same routine. Set up camera, lights for our renderer
+        // in this initialize function, like
+        //```
+        //GzRender renderer(m_pDisplay);
+        //status = status || renderer.putCamera(camera);
 
-    //renderer.putAttribute(lights);
-    //renderer.putAttribute(AAmethod); //optional
-    //renderer.putAttribute(refractionmode); //optional
-    //renderer.putAttribute(diffusemode); //optional
-    //renderer.putAttribute(arealightmode); //optional
-    //```
-    // Still need tokens. But might be quite different from original.
-    // Pass pointers and boolean values to renderer. And do
-    // rendering inside Render() function.
-    //************************
+        //status = status || renderer.putLights(lights);
+        //status = status || renderer.putAAsetting(AAmethod); //optional
+        //status = status || renderer.putAttribute(refractionmode); //optional
+        //status = status || renderer.putAttribute(diffusemode); //optional
+        //status = status || renderer.putAttribute(arealightmode); //optional
+        //```
+        // Still need tokens. But might be quite different from original.
+        // Pass pointers and boolean values to renderer. And do
+        // rendering inside Render() function.
+        //************************
+    }
+    catch (GzException e)
+    {
+        status = GZ_FAILURE;
+    }
     if (status)
     {
         AfxMessageBox(_T("Initiating went wrong!\n"));
@@ -87,66 +95,73 @@ int ApplicationEngine::Render()
 {
     int status(GZ_SUCCESS); 
 
-    // Initialize Display
-    m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
-
-    // Test display
-    for (int j = 0; j < m_nHeight/2; ++j)
+    try
     {
-        for (int i = 0; i < m_nWidth/2; ++i)
+        // Initialize Display
+        m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
+
+        // I/O File open. Temporary
+        //
+        //FILE *infile;
+        //if( (infile  = fopen( INFILE , "r" )) == NULL )
+        //{
+            //AfxMessageBox( "The input file was not opened\n" );
+            //return GZ_FAILURE;
+        //}
+        //
+        FILE *outfile;
+        if( (outfile  = std::fopen( OUTFILE , "wb" )) == NULL )
         {
-            int yj = j + m_nHeight / 4;
-            int xi = i + m_nWidth / 4;
-            //float ndcx = xi * 2.0f / m_nWidth - 1;
-            //float ndcy = -(yj * 2.0f / m_nHeight - 1);
-            m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
+            AfxMessageBox(_T("The output file was not opened\n"));
+            return GZ_FAILURE;
+        }
+
+        // Test display
+        // Test Sphere
+        Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
+        GzCamera cam; // Test with default camera
+        for (int j = 0; j < m_nHeight; ++j)
+        {
+            for (int i = 0; i < m_nWidth; ++i)
+            {
+                int yj = j;
+                int xi = i;
+                float ndcx = xi * 2.0f / m_nWidth - 1;
+                float ndcy = -(yj * 2.0f / m_nHeight - 1);
+                GzRay rForPixel = cam.generateRay(ndcx, ndcy);
+                if (s0.intersect(rForPixel).p_geometry)
+                {
+                    m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
+                }
+            }
+        }
+
+        //*******************************
+        //GzGeometry scene = constructScene(inFile);
+        //status = status || renderer.putScene(scene);
+        //status = status || renderer.renderToDisplay();
+        //*******************************
+
+
+        //GzFlushDisplay2File(outfile, m_pDisplay); 	/* */
+        //GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay);	// write out or update display to frame buffer
+        m_pDisplay->flush2File(outfile); //write out or update display to file
+        m_pDisplay->flush2FrameBuffer(m_pFrameBuffer); //write out or update display to frame buffer
+        // 
+        // Close file
+        // 
+
+        //if( fclose( infile ) )
+            //AfxMessageBox( "The input file was not closed\n" );
+
+        if( fclose( outfile ) )
+        {
+            AfxMessageBox(_T("The output file was not closed\n"));
         }
     }
-
-    // I/O File open. Temporary
-    //
-    //FILE *infile;
-    //if( (infile  = fopen( INFILE , "r" )) == NULL )
-    //{
-        //AfxMessageBox( "The input file was not opened\n" );
-        //return GZ_FAILURE;
-    //}
-    //
-    FILE *outfile;
-    if( (outfile  = std::fopen( OUTFILE , "wb" )) == NULL )
+    catch (GzException e)
     {
-        AfxMessageBox(_T("The output file was not opened\n"));
-        return GZ_FAILURE;
-    }
-
-    //*******************************
-    //constructScene(inFile);
-    //renderer.putAttribute(scene);
-    //if (renderer.isReady())
-    //{
-    //  renderer.renderToDisplay();
-    //}
-    //else
-    //{
-    //  AfxMessageBox("Rendering went wrong!\n");
-    //}
-    //*******************************
-
-
-    //GzFlushDisplay2File(outfile, m_pDisplay); 	/* */
-    //GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay);	// write out or update display to frame buffer
-    m_pDisplay->flush2File(outfile); //write out or update display to file
-    m_pDisplay->flush2FrameBuffer(m_pFrameBuffer); //write out or update display to frame buffer
-    // 
-    // Close file
-    // 
-
-    //if( fclose( infile ) )
-        //AfxMessageBox( "The input file was not closed\n" );
-
-    if( fclose( outfile ) )
-    {
-        AfxMessageBox(_T("The output file was not closed\n"));
+        status = GZ_FAILURE;
     }
     if (status)
     {

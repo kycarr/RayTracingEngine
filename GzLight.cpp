@@ -13,9 +13,9 @@ GzLight::GzLight(int t, const GzVector3 &pos, const GzColor &col) :
 }
 
 // Constructor makes a new white light with the given type and position
-GzLight::GzLight(int t, const GzVector3 &pos) : GzLight(t, pos, GzColor(1.0f, 1.0f, 1.0f))
-{
-}
+//GzLight::GzLight(int t, const GzVector3 &pos) : GzLight(t, pos, GzColor::WHITE)
+//{
+//}
 
 GzLight::GzLight() : GzLight(0, GzVector3(0.0f, 1.0f, 0.0f))
 {

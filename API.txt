@@ -6,6 +6,71 @@ const double PI(3.1415926535897932);
 // for magic numbers
 const int COORD4_BOUND(4);
 
+class GzRender
+{
+// attributes
+	GzDisplay *display;		// reference to display (for pixel buffer)
+	GzCamera camera;		// camera (ray origin) in the scene
+	GzGeometry scene[];		// geometry objects in the scene
+	GzLight lights[];		// lights in the scene
+	
+// constructors
+	GzRender(GzDisplay *d) : display(d) {}
+// methods
+	friend int GzNewRender(GzRender **render, GzDisplay *display)
+	{
+		render = new (std::nothrow) GzRender(display);
+		if (!render)
+		{
+		    return GZ_FAILURE;
+		}
+		return GZ_SUCCESS;
+	}
+	putAttribute(GzToken *attribute);	// Takes in camera/lights/scene and sets corresponding attribute
+	isReady();
+	renderToDisplay()
+	{
+		// get # of objects in scene, if 0 no intersections possible (just show bg)
+		int num_objects = sizeof(scene)/sizeof(*scene);
+		if (num_objects < 1)
+			return;
+
+		// for each pixel of the screen
+		for (int y = 0; y < display->yres; ++y)
+		{
+			for (int x = 0; x < display->xres; ++x)
+			{
+				GzColor final_color = GzColor(0.0f, 0.0f, 0.0f);
+				GzRay ray = GzRay(camera.position, GzVector3(x, y, -1000.0f));
+
+				IntersectResult closestIntersection = scene[0].intersect(ray);
+				GzColor computed_color = GzColor(0.0f, 0.0f, 0.0f);
+
+				// for each object in the scene
+				for (int i = 1; i < num_objects; i++)
+				{
+					// determine closest ray-object intersection
+					IntersectResult result = scene[i].intersect(ray);
+					if (result.distance < closestIntersection.distance)
+					{
+						closestIntersection = result;
+					}
+				}
+				// if intersection exists
+				if (closestIntersection.geometry != null)
+				{
+					// for each light in the scene, if light is not in shadow of another object:
+					computed_color += closestIntersection.shade(lights);
+				}
+				// not too sure how we plan on doing reflection factors (part of geometry material, would shade take care of this?)
+				final_color += computed_color * reflection_factor;
+				reflection_factor *= surface_reflection_property;
+				display->putDisplay(x, y, final_color);
+			}
+		}
+	}
+}
+
 class GzVector3
 {
 // attributes

@@ -5,6 +5,13 @@ const int GZ_FAILURE(1);
 const double PI(3.1415926535897932);
 // for magic numbers
 const int COORD4_BOUND(4);
+// If you need more constants, add them here and in GzConstants.h.
+
+class GzException
+{
+// constructors
+    ArrayException();
+};
 
 class GzVector3
 {
@@ -14,8 +21,9 @@ class GzVector3
     GzVector3(float a_x, float a_y, float a_z);
     GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
 // methods
+    float lengthSqr() const;
     float length() const;
-    GzVector3 normalize() const; // Return the normalized vector, without changing `this` object. If `this` vector is zero, return a zero vector.
+    GzVector3 normalize() const; // Return the normalized vector, without changing `this` object. If `this` vector is zero, throw an exception.
     GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;
     GzVector3 crossMultiply(const GzVector3 &cross) const;
@@ -35,10 +43,15 @@ class GzMatrix
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
     GzMatrix(float angle, int axis); // Build a rotation matrix: rotate `angle` degree along an axis, 0 for x axis, 1 for y, 2 for z.
 // methods
-    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
+    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Actually only the inverse transpose of the upper left 3*3 part. Ignore translation.
 // operator overloads with friend function
     friend GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
     friend GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
+};
+
+class GzTexCoord
+{
+// Not necessary immediately.
 };
 
 class GzRay
@@ -102,26 +115,81 @@ class GzPixel
     static unsigned short ctoi(float color);
 };
 
-class GzGeometry
-{
-    // base class, will be inherited by other geometry classes
-    //methods: virtual IntersectResult intersect(GzRay);
-    // not decided
-};
-
 class IntersectResult
 {
 // attributes
-    GzGeometry geometry; // Should be a reference to the geometry at the point of intersecting.
-    float distance;
-    GzVector3 position, normal;
+    const GzGeometry *const p_geometry;
+    const float distance;
+    const GzVector3 position;
+    const GzVector3 normal; // For refractive feature calculation, perhaps the normal vector should always point outward.
+    //const float u, v; // Do it later
 // constructors
-    IntersectResult(); // Default constructor. Build an object that do not intersect.
-    IntersectResult(const GzGeometry &obj, float d, const GzVector3 &p, const GzVector3 &n);
+    // Pre: a_nor is a normalized vector. No checking inside.
+    //IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor);
+    IntersectResult(); // Default constructor. Build a NOHIT object.
 // methods
-    shade(GzLight[]); // not decided
+    //shade(GzLight[]); // not decided
 // static members
     const static IntersectResult NOHIT;
+};
+
+class GzGeometry // Base class
+{
+// attributes
+    GzMaterial material;
+// constructors
+    GzGeometry(const GzMaterial &a_mater);
+    GzGeometry(); // Default constructor. Builds with default material.
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const = 0; // This method calculates the intersection of a ray and the geometry. Returns all the information needed for shading, including distance (from ray origin to the intersection point), position of intersection, normal vector of the intersection point, texture coordinates.
+    //virtual void transform(const GzMatrix &mat) = 0; // This method modifies the geometry according to a general transformation matrix.
+// additional description of GzGeometry class
+// You must implement any derived class of GzGeometry as:
+// Only store positions and normals of the object as attributes for your description of the geometry.
+// You can't have a `float radius` for a sphere. You can't have a position relative to a vertex for a rectangle, like `GzVector3 upperLeftCorner; GzVector3 side1; GzVector3 side2;`.
+// You must do things like `GzVector3 upperLeft; GzVector3 upperRight;` with absolute position vectors.
+// Normal vectors are OK.
+// The reason is, we want `transform` function to work for a general transformation matrix. If you don't know the type of the transformation ahead of time, you are not able to transform those primitive values, relative vectors or some other attributes accordingly.
+// You must transform the whole geometry correctly only with a general matrix. The only way to achieve this is to have absolute position vectors as attributes and transform all of them with the input matrix.
+// Also, you need to consider how to bind texture coordinates to the object.
+// For example, a perfect symmetric sphere is not able to have different texture coordinates for every point on the surface. For the purpose of texture, you need a texture coordinate system for your particular geometry object.
+// Even for an infinite plane, every point on the plane need a texture coordinate. And you need to find out how.
+};
+
+class Sphere: public GzGeometry
+{
+// attributes
+    GzVector3 center;
+    GzVector3 arctic; // Arctic point, theta = 0, phi = any
+    GzVector3 long_x; // Point for longitute calculation, theta = 90, phi = 0
+    GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
+    // These attributes is for utilizing the spherical coordinate system.
+// constructors
+    Sphere(const GzVector3 &c, float radius,
+            const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
+            const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
+            const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
+    // This constructor has three relative vectors, because it is more natural for the user to specify a sphere in this way. The sphere class does not use them directly as attributes, but convert them to absolute positions to store.
+    Sphere(); // Default constructor. Build a unit sphere in the world space.
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+protected:
+// static methods
+    static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray); // For the convenience of Ellipsoid class.
+};
+
+class Ellipsoid: public Sphere
+{
+// attributes
+    // no new attributes as compared to sphere.
+// constructors
+    Ellipsoid(const GzVector3 &c, const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe);
+    // This constructor has three relative vectors, because it is more natural for the user to specify an ellipsoid in this way. The ellipsoid class does not use them directly as attributes, but convert them to absolute positions to store.
+    Ellipsoid(); // Default constructor. Invoke the default constructor of Sphere.
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+    // You can call Sphere::getRayDistance function to help when implementing this intersect function
 };
 
 class GzMaterial
@@ -131,6 +199,7 @@ class GzMaterial
     GzColor Ka;   // ambient color
     // We might not need Ka at all later for our project. We can keep it now.
     GzColor Ks;   // specular color
+    // Same for Ks. Perhaps Ks could be represented by a reflectiveness coefficient. We can keep it now.
 	float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
                   // add texture component later
                   // add refractive index later
@@ -139,17 +208,20 @@ class GzMaterial
 // constructors
     GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
     GzMaterial();
+// static member
+    const static GzMaterial DEFAULT;
 };
 
 class GzLight
 {
 // attributes
-    int type;           // 0 for directional, 1 for point
+    int type;           // 0 for directional, 1 for point, 2 for area (do it later)
     GzVector3 position; // position if point light, direction if directional light
     GzColor color;      // the color of the light
 // constructors
-    GzLight(int t, GzVector3 pos,  GzColor col);
-    GzLight(int t, GzVector3 pos); // Build a white light.
+    GzLight(int t, const GzVector3 &pos, const GzColor &col = GzColor::WHITE);
+    // Just use a default parameter will do the job.
+    //GzLight(int t, GzVector3 pos); // Build a white light.
     GzLight(); // Default constructur; Build a directional light from the direction of (0, 1, 0).
 // need extension for area light later.
     //GzRectangle * rect;
@@ -175,4 +247,14 @@ class GzDisplay
 // static members
     const static short MAXXRES;
     const static short MAXYRES;
+};
+
+class GzRender
+{
+// attributes (private, lots of)
+// constructors
+private:
+    GzRender(); // Default constructor. Disabled by using private.
+public:
+    GzRender(const GzDisplay *p_disp);
 };

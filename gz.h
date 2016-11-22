@@ -5,12 +5,15 @@
 //                  only need to include this header to use all the API.
 
 #include "GzConstants.h"
+#include "GzException.h"
 #include "GzVector3.h"
 //#include "GzMatrix.h"
+//#include "GzTexCoord.h"
 #include "GzRay.h"
 #include "GzCamera.h"
 #include "GzColor.h"
 #include "GzPixel.h"
+#include "GzGeometry.h"
 #include "GzMaterial.h"
 #include "GzLight.h"
 #include "GzDisplay.h"

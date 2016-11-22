@@ -17,15 +17,14 @@
 Application::Application()
 {
 	m_pDisplay = nullptr;		// the display
-	m_pRender = nullptr;		// the renderer
+	//m_pRender = nullptr;		// the renderer
 	//m_pUserInput = nullptr;
 	m_pFrameBuffer = nullptr;
 }
 
 Application::~Application()
 {
-	if(m_pFrameBuffer != nullptr)
-		delete m_pFrameBuffer;
+	delete m_pFrameBuffer;
 	//if(m_pUserInput != nullptr)
 		//delete m_pUserInput;
 }

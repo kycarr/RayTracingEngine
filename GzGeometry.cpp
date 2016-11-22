@@ -46,17 +46,18 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
-        float o2c((this->center - ray.origin).length());
-        if (o2c < radius)
-        {
+        return IntersectResult(this, distance, interPos, (interPos - this->center).normalize());
+        //float o2c((this->center - ray.origin).length());
+        //if (o2c < radius)
+        //{
             // origin of ray inside the sphere. Normal points towards the center
-            return IntersectResult(this, distance, interPos, (interPos - this->center).normalize());
-        }
-        else
-        {
+            //return IntersectResult(this, distance, interPos, (interPos - this->center).normalize());
+        //}
+        //else
+        //{
             // origin of ray outside. Most common case.
-            return IntersectResult(this, distance, interPos, (this->center - interPos).normalize());
-        }
+            //return IntersectResult(this, distance, interPos, (this->center - interPos).normalize());
+        //}
     }
     else
     {

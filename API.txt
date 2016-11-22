@@ -121,7 +121,7 @@ class IntersectResult
     const GzGeometry *const p_geometry;
     const float distance;
     const GzVector3 position;
-    const GzVector3 normal;
+    const GzVector3 normal; // For refractive feature calculation, perhaps the normal vector should always point outward.
     //const float u, v; // Do it later
 // constructors
     // Pre: a_nor is a normalized vector. No checking inside.
@@ -247,4 +247,12 @@ class GzDisplay
 // static members
     const static short MAXXRES;
     const static short MAXYRES;
+};
+
+class GzRender
+{
+// attributes (private, lots of)
+// constructors
+    GzRender() = delete; // Default constructor. Disabled.
+    GzRender(const GzDisplay *p_disp);
 };

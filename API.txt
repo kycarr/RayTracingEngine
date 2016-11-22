@@ -20,9 +20,10 @@ class GzRender
 	GzCamera camera;		// camera (ray origin) in the scene
 	GzGeometry scene[];		// geometry objects in the scene
 	GzLight lights[];		// lights in the scene
+	int attribute;			// 
 	
 // constructors
-	GzRender(GzDisplay *d) : display(d) {}
+	GzRender(GzDisplay *_display) : display(_display) {}
 // methods
 	friend int GzNewRender(GzRender **render, GzDisplay *display)
 	{
@@ -33,9 +34,15 @@ class GzRender
 		}
 		return GZ_SUCCESS;
 	}
-	putAttribute(GzToken *attribute);	// Takes in camera/lights/scene and sets corresponding attribute
-	isReady();
-	renderToDisplay()
+	void putCamera(GzCamera _camera);
+	void putLights(GzLight _lights[]);
+	void putScene(GzGeometry _scene[]);
+	void putAttribute(int _attribute);
+	bool isReady()
+	{
+		return camera != null && lights != null && scene != null;
+	}
+	void renderToDisplay()
 	{
 		// get # of objects in scene, if 0 no intersections possible (just show bg)
 		int num_objects = sizeof(scene)/sizeof(*scene);

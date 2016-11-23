@@ -13,78 +13,6 @@ class GzException
     ArrayException();
 };
 
-class GzRender
-{
-// attributes
-	GzDisplay *display;		// reference to display (for pixel buffer)
-	GzCamera camera;		// camera (ray origin) in the scene
-	GzGeometry scene[];		// geometry objects in the scene
-	GzLight lights[];		// lights in the scene
-	int attribute;			// 
-	
-// constructors
-	GzRender(GzDisplay *_display) : display(_display) {}
-// methods
-	friend int GzNewRender(GzRender **render, GzDisplay *display)
-	{
-		render = new (std::nothrow) GzRender(display);
-		if (!render)
-		{
-		    return GZ_FAILURE;
-		}
-		return GZ_SUCCESS;
-	}
-	void putCamera(GzCamera _camera);
-	void putLights(GzLight _lights[]);
-	void putScene(GzGeometry _scene[]);
-	void putAttribute(int _attribute);
-	bool isReady()
-	{
-		return camera != null && lights != null && scene != null;
-	}
-	void renderToDisplay()
-	{
-		// get # of objects in scene, if 0 no intersections possible (just show bg)
-		int num_objects = sizeof(scene)/sizeof(*scene);
-		if (num_objects < 1)
-			return;
-
-		// for each pixel of the screen
-		for (int y = 0; y < display->yres; ++y)
-		{
-			for (int x = 0; x < display->xres; ++x)
-			{
-				GzColor final_color = GzColor(0.0f, 0.0f, 0.0f);
-				GzRay ray = GzRay(camera.position, GzVector3(x, y, -1000.0f));
-
-				IntersectResult closestIntersection = scene[0].intersect(ray);
-				GzColor computed_color = GzColor(0.0f, 0.0f, 0.0f);
-
-				// for each object in the scene
-				for (int i = 1; i < num_objects; i++)
-				{
-					// determine closest ray-object intersection
-					IntersectResult result = scene[i].intersect(ray);
-					if (result.distance < closestIntersection.distance)
-					{
-						closestIntersection = result;
-					}
-				}
-				// if intersection exists
-				if (closestIntersection.geometry != null)
-				{
-					// for each light in the scene, if light is not in shadow of another object:
-					computed_color += closestIntersection.shade(lights);
-				}
-				// not too sure how we plan on doing reflection factors (part of geometry material, would shade take care of this?)
-				final_color += computed_color * reflection_factor;
-				reflection_factor *= surface_reflection_property;
-				display->putDisplay(x, y, final_color);
-			}
-		}
-	}
-}
-
 class GzVector3
 {
 // attributes
@@ -158,6 +86,7 @@ class GzColor
     GzColor(); // Default constructor. Build a black GzColor object.
 // methods
     GzColor modulate(const GzColor &other) const;
+    GzColor exposure() const; // Photo exposure. Modifies overflowed color to a reasonable value. Have smaller effect on lower values.
 // static members
     const static GzColor BLACK;
     const static GzColor WHITE;
@@ -272,10 +201,11 @@ class GzMaterial
     // We might not need Ka at all later for our project. We can keep it now.
     GzColor Ks;   // specular color
     // Same for Ks. Perhaps Ks could be represented by a reflectiveness coefficient. We can keep it now.
-	float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
-                  // add texture component later
-                  // add refractive index later
-	float reflectiveness;
+    float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
+    // add texture component later
+    // add refractive index later
+    float r; // reflective part
+    //float f; // refractive part
 
 // constructors
     GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
@@ -297,6 +227,8 @@ class GzLight
     GzLight(); // Default constructur; Build a directional light from the direction of (0, 1, 0).
 // need extension for area light later.
     //GzRectangle * rect;
+// methods
+    getLightDir(const GzVector3 &pos);
 };
 
 class GzDisplay
@@ -324,9 +256,86 @@ class GzDisplay
 class GzRender
 {
 // attributes (private, lots of)
+private:
+    GzDisplay *p_display;
+    GzCamera *p_camera;
+    GzLight **p_light_arr; // Array of pointers
+    int n_lights;
+    GzGeometry *p_scene; // Union geometry object or one object. Not an array
+    int options;
 // constructors
 private:
     GzRender(); // Default constructor. Disabled by using private.
 public:
     GzRender(const GzDisplay *p_disp);
+// methods
+    int putCamera(const GzCamera *p_cam);
+    int putLights(const GzLight *p_li_arr[]);
+    int putScene(const GzGeometry *p_sce);
+    int putAttribute(int attribute);
+// static methods
+    static GzColor shade(const IntersectResult &inter, const GzRay &incRay, const GzGeometry *p_global, const GzLight *p_li_arr[], int num_lights);
 };
+
+class GzRender
+{
+// attributes
+ GzDisplay *display;  // reference to display (for pixel buffer)
+ GzCamera camera;  // camera (ray origin) in the scene
+ GzGeometry scene[];  // geometry objects in the scene
+ GzLight lights[];  // lights in the scene
+ int attribute;   // 
+ 
+// constructors
+ GzRender(GzDisplay *_display) : display(_display) {}
+// methods
+ void putCamera(GzCamera _camera);
+ void putLights(GzLight _lights[]);
+ void putScene(GzGeometry _scene[]);
+ void putAttribute(int _attribute);
+ bool isReady()
+ {
+  return camera != null && lights != null && scene != null;
+ }
+ void renderToDisplay()
+ {
+  // get # of objects in scene, if 0 no intersections possible (just show bg)
+  int num_objects = sizeof(scene)/sizeof(*scene);
+  if (num_objects < 1)
+   return;
+
+  // for each pixel of the screen
+  for (int y = 0; y < display->yres; ++y)
+  {
+   for (int x = 0; x < display->xres; ++x)
+   {
+    GzColor final_color = GzColor(0.0f, 0.0f, 0.0f);
+    GzRay ray = GzRay(camera.position, GzVector3(x, y, -1000.0f));
+
+    IntersectResult closestIntersection = scene[0].intersect(ray);
+    GzColor computed_color = GzColor(0.0f, 0.0f, 0.0f);
+
+    // for each object in the scene
+    for (int i = 1; i < num_objects; i++)
+    {
+     // determine closest ray-object intersection
+     IntersectResult result = scene[i].intersect(ray);
+     if (result.distance < closestIntersection.distance)
+     {
+      closestIntersection = result;
+     }
+    }
+    // if intersection exists
+    if (closestIntersection.geometry != null) // Are you writing Java?
+    {
+     // for each light in the scene, if light is not in shadow of another object:
+     computed_color += closestIntersection.shade(lights);
+    }
+    // not too sure how we plan on doing reflection factors (part of geometry material, would shade take care of this?)
+    final_color += computed_color * reflection_factor;
+    reflection_factor *= surface_reflection_property;
+    display->putDisplay(x, y, final_color);
+   }
+  }
+ }
+}

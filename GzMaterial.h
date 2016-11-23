@@ -17,7 +17,8 @@ public:
 	float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
                   // add texture component later
                   // add refractive index later
-	float reflectiveness;
+	float r; // reflective part
+	//float f; // refractive part
 
     // constructors
     GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);

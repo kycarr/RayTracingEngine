@@ -34,20 +34,19 @@ ApplicationEngine::~ApplicationEngine()
 
 int ApplicationEngine::Initialize()
 {
-    //GzCamera	camera;  
     // Tokens need to be redesigned.
-    //GzToken		nameListShader[9]; 	    // shader attribute names
-    //GzPointer   valueListShader[9];		// shader attribute pointers
-    //GzToken     nameListLights[10];		// light info
+    //GzToken  nameListShader[9];      // shader attribute names
+    //GzPointer   valueListShader[9];  // shader attribute pointers
+    //GzToken     nameListLights[10];  // light info
     //GzPointer   valueListLights[10];
-    //int			shaderType, interpStyle;
-    //float		specpower;
+    //int   shaderType, interpStyle;
+    //float  specpower;
     int status(GZ_SUCCESS); 
 
     try
     {
         // m_nWidth and m_nHeight are variables inherited from Application class.
-        m_nWidth = 256;		// frame buffer and display width
+        m_nWidth = 256;  // frame buffer and display width
         m_nHeight = 256;    // frame buffer and display height
 
         // Initialize frame buffer and display
@@ -55,21 +54,22 @@ int ApplicationEngine::Initialize()
 
         status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
 
-        GzLight lTemp1;
-        GzLight lTemp2(1, GzVector3(10.0f, 10.0f, -10));
-        GzLight lTemp3(0, GzVector3(10.0f, 10.0f, -10), GzColor::CYAN);
-        GzMaterial mTemp1;
-        GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
+        GzCamera *p_camera = new GzCamera();
+        GzLight **g_lights = new GzLight*[2];
+        g_lights[0] = new GzLight(0, GzVector3(10.0f, 10.0f, -10));
+        g_lights[1] = new GzLight(0, GzVector3(-10.0f, 10.0f, -10), GzColor::CYAN);
+        //GzMaterial mTemp1;
+        //GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
         // We'll do AA in renderer directly.
         //
         //**********************
         // Same routine. Set up camera, lights for our renderer
         // in this initialize function, like
         //```
-        //GzRender renderer(m_pDisplay);
-        //status = status || renderer.putCamera(camera);
+        m_pRender = new GzRender(m_pDisplay);
+        status = status || m_pRender->putCamera(p_camera);
 
-        //status = status || renderer.putLights(lights);
+        status = status || m_pRender->putLights(g_lights, 2);
         //status = status || renderer.putAAsetting(AAmethod); //optional
         //status = status || renderer.putAttribute(refractionmode); //optional
         //status = status || renderer.putAttribute(diffusemode); //optional
@@ -118,33 +118,34 @@ int ApplicationEngine::Render()
 
         // Test display
         // Test Sphere
+        //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
+        //GzCamera cam; // Test with default camera
+        //for (int j = 0; j < m_nHeight; ++j)
+        //{
+            //for (int i = 0; i < m_nWidth; ++i)
+            //{
+                //int yj = j;
+                //int xi = i;
+                //float ndcx = xi * 2.0f / m_nWidth - 1;
+                //float ndcy = -(yj * 2.0f / m_nHeight - 1);
+                //GzRay rForPixel = cam.generateRay(ndcx, ndcy);
+                //if (s0.intersect(rForPixel).p_geometry)
+                //{
+                    //m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
+                //}
+            //}
+        //}
+
+        //*******************************
         Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
-        GzCamera cam; // Test with default camera
-        for (int j = 0; j < m_nHeight; ++j)
-        {
-            for (int i = 0; i < m_nWidth; ++i)
-            {
-                int yj = j;
-                int xi = i;
-                float ndcx = xi * 2.0f / m_nWidth - 1;
-                float ndcy = -(yj * 2.0f / m_nHeight - 1);
-                GzRay rForPixel = cam.generateRay(ndcx, ndcy);
-                if (s0.intersect(rForPixel).p_geometry)
-                {
-                    m_pDisplay->putDisplay(xi, yj, (GzColor::BLUE + GzColor::RED) * 0.25);
-                }
-            }
-        }
-
-        //*******************************
         //GzGeometry scene = constructScene(inFile);
-        //status = status || renderer.putScene(scene);
-        //status = status || renderer.renderToDisplay();
+        status = status || m_pRender->putScene(&s0);
+        status = status || m_pRender->renderToDisplay();
         //*******************************
 
 
-        //GzFlushDisplay2File(outfile, m_pDisplay); 	/* */
-        //GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay);	// write out or update display to frame buffer
+        //GzFlushDisplay2File(outfile, m_pDisplay);  /* */
+        //GzFlushDisplay2FrameBuffer(m_pFrameBuffer, m_pDisplay); // write out or update display to frame buffer
         m_pDisplay->flush2File(outfile); //write out or update display to file
         m_pDisplay->flush2FrameBuffer(m_pFrameBuffer); //write out or update display to frame buffer
         // 

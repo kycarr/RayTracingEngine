@@ -14,6 +14,7 @@ public:
     GzColor(float a_r, float a_g, float a_b);
 // methods
     GzColor modulate(const GzColor &other) const;
+    GzColor exposure() const;
 // static members
     const static GzColor BLACK;
     const static GzColor WHITE;

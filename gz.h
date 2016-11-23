@@ -17,6 +17,7 @@
 #include "GzMaterial.h"
 #include "GzLight.h"
 #include "GzDisplay.h"
+#include "GzRender.h"
 
 
 #endif

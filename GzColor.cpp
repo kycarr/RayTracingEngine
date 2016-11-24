@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GzColor.h"
+#include <cmath>
 
 GzColor::GzColor(float a_r, float a_g, float a_b) :
     r(a_r), g(a_g), b(a_b)
@@ -24,7 +25,10 @@ const GzColor GzColor::CYAN(0.0f, 1.0f, 1.0f);
 const GzColor GzColor::MAGENTA(1.0f, 0.0f, 1.0f);
 const GzColor GzColor::YELLOW(1.0f, 1.0f, 0.0f);
 
-
+GzColor GzColor::exposure() const
+{
+    return GzColor(-std::expm1(-this->r), -std::expm1(-this->g), -std::expm1(-this->b));
+}
 
 GzColor operator+(const GzColor &c1, const GzColor &c2)
 {

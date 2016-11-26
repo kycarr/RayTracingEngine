@@ -137,9 +137,10 @@ int ApplicationEngine::Render()
         //}
 
         //*******************************
-        Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
+        //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
+        Sphere *p_s0 = new Sphere(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
         //GzGeometry scene = constructScene(inFile);
-        status = status || m_pRender->putScene(&s0);
+        status = status || m_pRender->putScene(p_s0);
         status = status || m_pRender->renderToDisplay();
         //*******************************
 
@@ -174,7 +175,8 @@ int ApplicationEngine::Render()
 void ApplicationEngine::Clean()
 {
     // Might need to clean renderer and texture and other objects
-    //status |= GzFreeRender(m_pRender); 
+    delete m_pRender;
+    m_pRender = nullptr;
     delete m_pDisplay;
     m_pDisplay = nullptr;
     //status |= GzFreeTexture();

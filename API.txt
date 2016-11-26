@@ -262,15 +262,18 @@ private:
     GzLight **p_light_arr; // Array of pointers
     int n_lights;
     GzGeometry *p_scene; // Union geometry object or one object. Not an array
+    // These pointers above must be dynamically allocated.
     int options;
 // constructors
 private:
     GzRender(); // Default constructor. Disabled by using private.
 public:
     GzRender(const GzDisplay *p_disp);
+// destructor
+    ~GzRender();
 // methods
     int putCamera(const GzCamera *p_cam);
-    int putLights(const GzLight *p_li_arr[]);
+    int putLights(const GzLight **p_li_arr);
     int putScene(const GzGeometry *p_sce);
     int putAttribute(int attribute);
 // static methods

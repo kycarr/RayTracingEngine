@@ -137,7 +137,9 @@ int ApplicationEngine::Render()
         //}
 
         //*******************************
-        Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
+        Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
+        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0);
+        s0.material = mat;
         //GzGeometry scene = constructScene(inFile);
         status = status || m_pRender->putScene(&s0);
         status = status || m_pRender->renderToDisplay();

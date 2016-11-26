@@ -88,7 +88,16 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, const
                 GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
                 float eDotR = (incDir.dotMultiply(lightDir) < 0.0f ? 0.0f : incDir.dotMultiply(lightDir));
                 reflectPart = reflectPart + p_li_arr[i]->color * std::pow(eDotR, inter.p_geometry->material.s);
-                diffusePart = diffusePart + p_li_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL;
+
+                GzTexture tex = inter.p_geometry->material.texture;
+                if (tex.hasTexture())
+                {
+                    diffusePart = diffusePart + p_li_arr[i]->color.modulate(tex.tex_map(inter.u, inter.v)) * nDotL;
+                }
+                else
+                {
+                    diffusePart = diffusePart + p_li_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL;
+                }
             }
         }
         else if (p_li_arr[i]->type == 1)

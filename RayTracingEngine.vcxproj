@@ -190,6 +190,7 @@
     <ClInclude Include="GzPixel.h" />
     <ClInclude Include="GzRay.h" />
     <ClInclude Include="GzRender.h" />
+    <ClInclude Include="GzTexture.h" />
     <ClInclude Include="GzVector3.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="GzMaterial.h" />
@@ -213,6 +214,7 @@
     <ClCompile Include="GzPixel.cpp" />
     <ClCompile Include="GzRay.cpp" />
     <ClCompile Include="GzRender.cpp" />
+    <ClCompile Include="GzTexture.cpp" />
     <ClCompile Include="GzVector3.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="RayTracingEngine.cpp" />

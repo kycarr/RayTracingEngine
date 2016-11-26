@@ -4,10 +4,13 @@
 #include <cmath>
 
 // Encapsulate u and v?
-//IntersectResult::IntersectResult(const GzGeometry *p_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v) :
+IntersectResult::IntersectResult(const GzGeometry *p_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v) :
+    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(a_v), v(a_v)
+{
+}
+
 IntersectResult::IntersectResult(const GzGeometry *p_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor) :
-    //p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(a_v), v(a_v)
-    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor)
+    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(-1), v(-1)
 {
 }
 
@@ -46,7 +49,13 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
-        return IntersectResult(this, distance, interPos, (interPos - this->center).normalize());
+        GzVector3 n = (interPos - center).normalize();
+        const double pi = 3.1415926535897;
+        float u = 0.5 + atan2(n.x, n.z) / (2 * pi);
+        float v = 0.5 + n.y * 0.5;
+        //float u = asin(n.x)/pi + 0.5;
+        //float v = asin(n.y)/pi + 0.5;
+        return IntersectResult(this, distance, interPos, (interPos - this->center).normalize(), u, v);
         //float o2c((this->center - ray.origin).length());
         //if (o2c < radius)
         //{

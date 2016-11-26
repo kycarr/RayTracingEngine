@@ -2,12 +2,23 @@
 #include "GzRender.h"
 #include <cmath>
 
-GzRender::GzRender() : p_display(nullptr), p_camera(nullptr), p_light_arr(nullptr), p_scene(nullptr), options(0)
+GzRender::GzRender() : p_display(nullptr), p_camera(nullptr), p_light_arr(nullptr), n_lights(0), p_scene(nullptr), options(0)
 {
 }
 
-GzRender::GzRender(GzDisplay * p_disp) : p_display(p_disp), p_camera(nullptr), p_light_arr(nullptr), p_scene(nullptr), options(0)
+GzRender::GzRender(GzDisplay * p_disp) : p_display(p_disp), p_camera(nullptr), p_light_arr(nullptr), n_lights(0), p_scene(nullptr), options(0)
 {
+}
+
+GzRender::~GzRender()
+{
+    delete p_camera;
+    for (int i = 0; i < n_lights; ++i)
+    {
+        delete p_light_arr[i];
+    }
+    delete [] p_light_arr;
+    delete p_scene;
 }
 
 int GzRender::putCamera(GzCamera *p_cam)
@@ -16,13 +27,13 @@ int GzRender::putCamera(GzCamera *p_cam)
     return GZ_SUCCESS;
 }
 
-int GzRender::putLights(GzLight *p_li_arr[], int num_lights)
+int GzRender::putLights(GzLight **p_li_arr, int num_lights)
 {
-    this->p_light_arr = new GzLight*[num_lights];
-    for (int i = 0; i < num_lights; ++i)
-    {
-        this->p_light_arr[i] = p_li_arr[i];
-    }
+    this->p_light_arr = p_li_arr;
+    //for (int i = 0; i < num_lights; ++i)
+    //{
+        //this->p_light_arr[i] = p_li_arr[i];
+    //}
     this->n_lights = num_lights;
     return GZ_SUCCESS;
 }
@@ -88,7 +99,16 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, const
                 GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
                 float eDotR = (incDir.dotMultiply(lightDir) < 0.0f ? 0.0f : incDir.dotMultiply(lightDir));
                 reflectPart = reflectPart + p_li_arr[i]->color * std::pow(eDotR, inter.p_geometry->material.s);
-                diffusePart = diffusePart + p_li_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL;
+
+                GzTexture tex = inter.p_geometry->material.texture;
+                if (tex.hasTexture())
+                {
+                    diffusePart = diffusePart + p_li_arr[i]->color.modulate(tex.tex_map(inter.u, inter.v)) * nDotL;
+                }
+                else
+                {
+                    diffusePart = diffusePart + p_li_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL;
+                }
             }
         }
         else if (p_li_arr[i]->type == 1)

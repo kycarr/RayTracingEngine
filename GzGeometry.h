@@ -14,10 +14,10 @@ public:
     const float distance;
     const GzVector3 position;
     const GzVector3 normal;
-    //const float u, v;
+    const float u, v;
 
     // Pre: a_nor is a normalized vector. No checking inside.
-    //IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
     IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor);
     IntersectResult(); // Default constructor. Build a NOHIT object.
 

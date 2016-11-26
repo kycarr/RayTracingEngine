@@ -21,13 +21,15 @@ private:
     GzRender(); // Default constructor. Disabled by using private.
 public:
     GzRender(GzDisplay *p_disp);
+    ~GzRender();
     int putCamera(GzCamera *p_cam);
-    int putLights(GzLight *p_li_arr[], int num_lights);
+    int putLights(GzLight **p_li_arr, int num_lights);
     int putScene(GzGeometry *p_sce);
     //int putAASetting(const GzAASetting *p_AASet);
     int putAttribute(int attribute);
     //bool isReady() const;
     int renderToDisplay();
+
 
 //static function
     static GzColor shade(const IntersectResult &inter, const GzRay &incRay, const GzGeometry *p_global, GzLight *p_li_arr[], int num_lights);

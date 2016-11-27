@@ -1,6 +1,7 @@
 #ifndef GZGEOMETRY_H
 #define GZGEOMETRY_H
 
+#include "GzConstants.h"
 #include "GzVector3.h"
 #include "GzRay.h"
 #include "GzMaterial.h"
@@ -44,9 +45,10 @@ public:
     GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
 // constructors
     Sphere(const GzVector3 &c, float radius,
-            const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
-            const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
-            const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
+            const GzMaterial &a_mat = GzMaterial::DEFAULT,
+            const GzVector3 &x_axe = GzVector3(0.0f, 0.0f, 1.0f),
+            const GzVector3 &y_axe = GzVector3(1.0f, 0.0f, 0.0f),
+            const GzVector3 &z_axe = GzVector3(0.0f, 1.0f, 0.0f));
     Sphere();
 // methods
     virtual IntersectResult intersect(const GzRay &ray) const;

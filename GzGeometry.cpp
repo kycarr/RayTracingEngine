@@ -5,7 +5,7 @@
 
 // Encapsulate u and v?
 IntersectResult::IntersectResult(const GzGeometry *p_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v) :
-    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(a_v), v(a_v)
+    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(a_u), v(a_v)
 {
 }
 
@@ -30,9 +30,9 @@ GzGeometry::GzGeometry() : material(GzMaterial::DEFAULT)
 {
 }
 
-Sphere::Sphere(const GzVector3 &c, float radius,
-    const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe) :
-    center(c), arctic(c + radius * z_axe.normalize()),
+Sphere::Sphere(const GzVector3 &c, float radius, const GzMaterial &a_mat,
+    const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe) : GzGeometry(a_mat),
+    center(c), arctic(c + radius * z_axe.normalize()), 
     long_x(c + radius * x_axe.normalize()),
     long_y(c + radius * y_axe.normalize())
 {
@@ -49,12 +49,18 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
-        GzVector3 n = (interPos - center).normalize();
-        const double pi = 3.1415926535897;
-        float u = 0.5 + atan2(n.x, n.z) / (2 * pi);
-        float v = 0.5 + n.y * 0.5;
-        //float u = asin(n.x)/pi + 0.5;
-        //float v = asin(n.y)/pi + 0.5;
+        GzVector3 relative(interPos - center);
+        GzVector3 n(relative.normalize());
+        float theta = std::acos(n.dotMultiply((this->arctic - this->center).normalize()));
+        float v = static_cast<float>(theta / PI);
+        float u = 0.0f;
+        if (v != 0.0f && v != 1.0f)
+        {
+            float cosPhiL = n.dotMultiply(this->long_x - this->center);
+            float sinPhiL = n.dotMultiply(this->long_y - this->center);
+            float phi = std::atan2(sinPhiL, cosPhiL);
+            u = static_cast<float>(phi / (2*PI) + 0.5);
+        }
         return IntersectResult(this, distance, interPos, (interPos - this->center).normalize(), u, v);
         //float o2c((this->center - ray.origin).length());
         //if (o2c < radius)

@@ -13,6 +13,7 @@
 #include "GzCamera.h"
 #include "GzColor.h"
 #include "GzPixel.h"
+#include "GzAASetting.h"
 #include "GzGeometry.h"
 #include "GzMaterial.h"
 #include "GzLight.h"

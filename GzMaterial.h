@@ -1,5 +1,5 @@
-#ifndef MATERIAL_H
-#define MATERIAL_H
+#ifndef GZMATERIAL_H
+#define GZMATERIAL_H
 //
 // GzMaterial.h     Represents the material of a Geometry object
 // 

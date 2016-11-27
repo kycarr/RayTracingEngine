@@ -96,16 +96,17 @@ GzColor GzTexture::image_tex_func(float u, float v)
 /* Checkerboard procedural texture function */
 GzColor GzTexture::checker_ptex_func(float u, float v)
 {
-    u = max(0, u);
-    u = min(u, 1);
-    v = max(0, v);
-    v = min(v, 1);
+    int scale = 20;
+    //u = max(0, u);
+    //u = min(u, 1);
+    //v = max(0, v);
+    //v = min(v, 1);
 
-    int x = floor(u * 10);
-    int y = floor(v * 10);
+    int x = floor(u * scale);
+    int y = floor(v * scale);
 
-    if (x % 2 == 0 && y % 2 == 0)
-        return GzColor::RED;
+    if ((x + y) % 2 == 0)
+        return GzColor::BLACK;
     else
         return GzColor::WHITE;
 }

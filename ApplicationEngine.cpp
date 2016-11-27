@@ -56,8 +56,8 @@ int ApplicationEngine::Initialize()
 
         GzCamera *p_camera = new GzCamera();
         GzLight **g_lights = new GzLight*[2];
-        g_lights[0] = new GzLight(0, GzVector3(10.0f, 10.0f, -10));
-        g_lights[1] = new GzLight(0, GzVector3(-10.0f, 10.0f, -10), GzColor::CYAN);
+        g_lights[0] = new GzLight(0, GzVector3(10.0f, 10.0f, -10), GzColor::GREEN);
+        g_lights[1] = new GzLight(0, GzVector3(-10.0f, 10.0f, -10), GzColor::RED);
         //GzMaterial mTemp1;
         //GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
         // We'll do AA in renderer directly.
@@ -70,7 +70,13 @@ int ApplicationEngine::Initialize()
         status = status || m_pRender->putCamera(p_camera);
 
         status = status || m_pRender->putLights(g_lights, 2);
-        //status = status || renderer.putAAsetting(AAmethod); //optional
+        //GzVector3 *kernel4 = new GzVector3[4];
+        //kernel4[0] = GzVector3(-0.25f, 0.25f, 0.25f);
+        //kernel4[1] = GzVector3(0.25f, 0.25f, 0.25f);
+        //kernel4[2] = GzVector3(-0.25f, -0.25f, 0.25f);
+        //kernel4[3] = GzVector3(0.25f, -0.25f, 0.25f);
+        GzAASetting *p_9SAA = new GzAASetting(3);
+        status = status || m_pRender->putAASetting(p_9SAA); //optional
         //status = status || renderer.putAttribute(refractionmode); //optional
         //status = status || renderer.putAttribute(diffusemode); //optional
         //status = status || renderer.putAttribute(arealightmode); //optional
@@ -80,7 +86,7 @@ int ApplicationEngine::Initialize()
         // rendering inside Render() function.
         //************************
     }
-    catch (GzException e)
+    catch (GzException)
     {
         status = GZ_FAILURE;
     }
@@ -98,7 +104,8 @@ int ApplicationEngine::Render()
     try
     {
         // Initialize Display
-        m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
+        //m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
+        m_pDisplay->init(GzColor(0.2f, 0.2f, 0.2f));
 
         // I/O File open. Temporary
         //
@@ -138,10 +145,10 @@ int ApplicationEngine::Render()
 
         //*******************************
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
-        Sphere *p_s0 = new Sphere(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
+        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0.3f);
+        Sphere *p_s0 = new Sphere(GzVector3(0.0f, 0.0f, 10.0f), 5.0f, mat);
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
-        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0);
-        p_s0->material = mat;
+        //p_s0->material = mat;
         //GzGeometry scene = constructScene(inFile);
         status = status || m_pRender->putScene(p_s0);
         status = status || m_pRender->renderToDisplay();
@@ -164,7 +171,7 @@ int ApplicationEngine::Render()
             AfxMessageBox(_T("The output file was not closed\n"));
         }
     }
-    catch (GzException e)
+    catch (GzException)
     {
         status = GZ_FAILURE;
     }

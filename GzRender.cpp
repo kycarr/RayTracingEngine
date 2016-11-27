@@ -2,12 +2,14 @@
 #include "GzRender.h"
 #include <cmath>
 
-GzRender::GzRender() : p_display(nullptr), p_camera(nullptr), p_light_arr(nullptr), n_lights(0), p_scene(nullptr), options(0)
+GzRender::GzRender() : p_display(nullptr), p_camera(nullptr), p_light_arr(nullptr), n_lights(0), p_scene(nullptr), options(0), p_AA(nullptr)
 {
 }
 
 GzRender::GzRender(GzDisplay * p_disp) : p_display(p_disp), p_camera(nullptr), p_light_arr(nullptr), n_lights(0), p_scene(nullptr), options(0)
 {
+    //GzVector3 *uniKer = new GzVector3(0.0f, 0.0f, 1.0f);
+    this->p_AA = new GzAASetting(1);
 }
 
 GzRender::~GzRender()
@@ -17,8 +19,9 @@ GzRender::~GzRender()
     {
         delete p_light_arr[i];
     }
-    delete [] p_light_arr;
+    delete[] p_light_arr;
     delete p_scene;
+    delete p_AA;
 }
 
 int GzRender::putCamera(GzCamera *p_cam)
@@ -44,6 +47,12 @@ int GzRender::putScene(GzGeometry *p_sce)
     return GZ_SUCCESS;
 }
 
+int GzRender::putAASetting(GzAASetting *p_aa)
+{
+    this->p_AA = p_aa;
+    return GZ_SUCCESS;
+}
+
 int GzRender::putAttribute(int attribute)
 {
     this->options |= attribute;
@@ -57,17 +66,37 @@ int GzRender::renderToDisplay()
     {
         for (int i = 0; i < this->p_display->xres; ++i)
         {
+            GzColor pixelColor(0.0f, 0.0f, 0.0f);
             //for (int k = 0; k < this->p_AASetting->nSample; ++k)
-            float yj = j + 0.5f; // Add 0.5 for the center of the pixel
-            float xi = i + 0.5f;
-            float ndcx = xi * 2.0f / this->p_display->xres - 1;
-            float ndcy = -(yj * 2.0f / this->p_display->yres - 1);
-            GzRay rForPixel = this->p_camera->generateRay(ndcx, ndcy);
-            IntersectResult inter = this->p_scene->intersect(rForPixel);
-            if (inter.p_geometry)
+            for (int k = 0; k < this->p_AA->kernelSize; ++k)
             {
-                this->p_display->putDisplay(i, j, shade(inter, rForPixel, this->p_scene, this->p_light_arr, this->n_lights));
+                float yj = j + 0.5f + this->p_AA->ker[k].y; // Add 0.5 for the center of the pixel
+                float xi = i + 0.5f + this->p_AA->ker[k].x;
+                float ndcx = xi * 2.0f / this->p_display->xres - 1;
+                float ndcy = -(yj * 2.0f / this->p_display->yres - 1);
+                GzRay rForPixel = this->p_camera->generateRay(ndcx, ndcy);
+                IntersectResult inter = this->p_scene->intersect(rForPixel);
+                if (inter.p_geometry)
+                {
+                    pixelColor = pixelColor + this->p_AA->ker[k].z * shade(inter, rForPixel, this->p_scene, this->p_light_arr, this->n_lights);
+                    //this->p_display->putDisplay(i, j, shade(inter, rForPixel, this->p_scene, this->p_light_arr, this->n_lights));
+                }
+                else
+                {
+                    pixelColor = pixelColor + this->p_AA->ker[k].z * this->p_display->bgColor;
+                }
             }
+            this->p_display->putDisplay(i, j, pixelColor);
+            //float yj = j + 0.5f; // Add 0.5 for the center of the pixel
+            //float xi = i + 0.5f;
+            //float ndcx = xi * 2.0f / this->p_display->xres - 1;
+            //float ndcy = -(yj * 2.0f / this->p_display->yres - 1);
+            //GzRay rForPixel = this->p_camera->generateRay(ndcx, ndcy);
+            //IntersectResult inter = this->p_scene->intersect(rForPixel);
+            //if (inter.p_geometry)
+            //{
+                //this->p_display->putDisplay(i, j, shade(inter, rForPixel, this->p_scene, this->p_light_arr, this->n_lights));
+            //}
         }
     }
     return status;
@@ -97,7 +126,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, const
                     nDotL = -nDotL;
                 }
                 GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
-                float eDotR = (incDir.dotMultiply(lightDir) < 0.0f ? 0.0f : incDir.dotMultiply(lightDir));
+                float eDotR = (incDir.dotMultiply(reflecDir) < 0.0f ? 0.0f : incDir.dotMultiply(reflecDir));
                 reflectPart = reflectPart + p_li_arr[i]->color * std::pow(eDotR, inter.p_geometry->material.s);
 
                 GzTexture tex = inter.p_geometry->material.texture;
@@ -119,6 +148,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, const
     }
     reflectPart = reflectPart.exposure();
     diffusePart = diffusePart.exposure();
+    // Perhaps using a mode attribute to control brightness problem
     return inter.p_geometry->material.r * reflectPart + (1.0f - inter.p_geometry->material.r) * diffusePart;
 }
 

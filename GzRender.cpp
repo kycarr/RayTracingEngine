@@ -110,39 +110,44 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, const
     GzColor diffusePart(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < num_lights; ++i)
     {
-        if (p_li_arr[i]->type == 0)
+        GzVector3 lightDir;
+        if (p_li_arr[i]->type == DIR_LIGHT)
         {
-            //if light source visible
-            GzVector3 incDir = incRay.direction.flip();
-            GzVector3 lightDir = p_li_arr[i]->position;
-            float nDotL = lightDir.dotMultiply(inter.normal);
-            float nDotRay = incDir.dotMultiply(inter.normal);
-            if (nDotL * nDotRay > 0.0f)
-            {
-                GzVector3 flipN = inter.normal;
-                if (nDotL < 0.0f)
-                {
-                    flipN = inter.normal.flip();
-                    nDotL = -nDotL;
-                }
-                GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
-                float eDotR = (incDir.dotMultiply(reflecDir) < 0.0f ? 0.0f : incDir.dotMultiply(reflecDir));
-                reflectPart = reflectPart + p_li_arr[i]->color * std::pow(eDotR, inter.p_geometry->material.s);
-
-                GzTexture tex = inter.p_geometry->material.texture;
-                if (tex.hasTexture())
-                {
-                    diffusePart = diffusePart + p_li_arr[i]->color.modulate(tex.tex_map(inter.u, inter.v)) * nDotL;
-                }
-                else
-                {
-                    diffusePart = diffusePart + p_li_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL;
-                }
-            }
+            //if light source not visible
+            //continue;
+            lightDir = p_li_arr[i]->position;
         }
-        else if (p_li_arr[i]->type == 1)
+        else if (p_li_arr[i]->type == POINT_LIGHT)
         {
-            GzVector3 lightDir = (p_li_arr[i]->position - inter.position).normalize();
+            //if light source not visible
+            //continue;
+            lightDir = (p_li_arr[i]->position - inter.position).normalize();
+        }
+        // Common part for dir light and point light
+        GzVector3 incDir = incRay.direction.flip();
+        float nDotL = lightDir.dotMultiply(inter.normal);
+        float nDotRay = incDir.dotMultiply(inter.normal);
+        if (nDotL * nDotRay > 0.0f)
+        {
+            GzVector3 flipN = inter.normal;
+            if (nDotL < 0.0f)
+            {
+                flipN = inter.normal.flip();
+                nDotL = -nDotL;
+            }
+            GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
+            float eDotR = (incDir.dotMultiply(reflecDir) < 0.0f ? 0.0f : incDir.dotMultiply(reflecDir));
+            reflectPart = reflectPart + p_li_arr[i]->color * std::pow(eDotR, inter.p_geometry->material.s);
+
+            GzTexture tex = inter.p_geometry->material.texture;
+            if (tex.hasTexture())
+            {
+                diffusePart = diffusePart + p_li_arr[i]->color.modulate(tex.tex_map(inter.u, inter.v)) * nDotL;
+            }
+            else
+            {
+                diffusePart = diffusePart + p_li_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL;
+            }
         }
         //reflectPart = reflectPart + p_li_arr[i]->color * std::pow(eDotR, inter.p_geometry->material.s);
     }

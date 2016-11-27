@@ -56,9 +56,10 @@ int ApplicationEngine::Initialize()
 
         GzCamera *p_camera = new GzCamera(GzVector3(0.0f, 10.0f, -10.0f), GzVector3(0.0f, 0.0f, 0.0f), GzVector3(0.0f, 1.0f, 0.0f), 116.0f);
         GzLight **g_lights = new GzLight*[1];
-        //g_lights[0] = new GzLight(0, GzVector3(10.0f, 10.0f, -10), GzColor::GREEN);
-        g_lights[0] = new GzLight(0, GzVector3(0, 1.0f, 0), GzColor::WHITE);
-        //g_lights[1] = new GzLight(0, GzVector3(-10.0f, 10.0f, -10), GzColor::RED);
+        //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(10.0f, 10.0f, -10), GzColor::GREEN);
+        //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(0, 1.0f, 0), GzColor::WHITE);
+        g_lights[0] = new GzLight(POINT_LIGHT, GzVector3(0, 10.0f, 0), GzColor::WHITE);
+        //g_lights[1] = new GzLight(DIR_LIGHT, GzVector3(-10.0f, 10.0f, -10), GzColor::RED);
         //GzMaterial mTemp1;
         //GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
         // We'll do AA in renderer directly.

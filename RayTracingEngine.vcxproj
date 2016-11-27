@@ -184,6 +184,7 @@
     <ClInclude Include="GzAASetting.h" />
     <ClInclude Include="GzCamera.h" />
     <ClInclude Include="GzColor.h" />
+    <ClInclude Include="GzConstants.h" />
     <ClInclude Include="GzDisplay.h" />
     <ClInclude Include="GzException.h" />
     <ClInclude Include="GzGeometry.h" />

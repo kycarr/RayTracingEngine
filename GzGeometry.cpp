@@ -54,7 +54,7 @@ IntersectResult Plane::intersect(const GzRay &ray) const
         return IntersectResult::NOHIT;
     }
     float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
-    if (distance <= 0.0f)
+    if (distance <= 0.005f)
     {
         return IntersectResult::NOHIT;
     }
@@ -122,25 +122,48 @@ float Sphere::getRayDistance(const GzVector3 &c, float r, const GzRay &ray)
     float dDotV = ray.direction.dotMultiply(v);
     float delta = dDotV * dDotV - v.lengthSqr() + r * r;
     // If no hit, return -1. Tangent line? Need to check more
-    if (delta >= 0) {
+    if (delta >= 0)
+    {
         float deltaSqrt = std::sqrt(delta);
+        if (dDotV <= 0.0f)
+        {
+            if (dDotV + deltaSqrt > EPSILON0)
+            {
+                return dDotV + deltaSqrt;
+            }
+            else
+            {
+                return std::numeric_limits<float>::infinity(); // no hit
+            }
+        }
+        else
+        {
+            if (dDotV - deltaSqrt > EPSILON0)
+            {
+                return dDotV - deltaSqrt;
+            }
+            else
+            {
+                return dDotV + deltaSqrt;
+            }
+        }
         // The two roots are dDotV +- deltaSqrt
         // For deltaSqrt == 0, tangent line case, only need to return when distance > 0.
         // For two separate roots, if one + and one -, return positive one;
         // if two +, return smaller one; if two -, return -1;
         // if there are 0 in the two roots, only return the greater one if it is +. This also covers two 0 case.
-        if ((std::abs(dDotV) < deltaSqrt) || (std::abs(dDotV) == deltaSqrt && dDotV + deltaSqrt > 0.0f))
+        //if ((deltaSqrt - std::abs(dDotV) > 0.005f) || (std::abs(dDotV) == deltaSqrt && dDotV + deltaSqrt > 0.005f))
         // std::abs(dDotV) < deltaSqrt covers one + and one -
         // std::abs(dDotV) == deltaSqrt covers one 0 / two 0
-        {
-            return dDotV + deltaSqrt;
-        }
-        else if (std::abs(dDotV) > deltaSqrt && dDotV > 0.0f)
-        {
-            return dDotV - deltaSqrt;
-        }
+        //{
+            //return dDotV + deltaSqrt;
+        //}
+        //else if (std::abs(dDotV) - deltaSqrt > 0.005f && dDotV > 0.0f)
+        //{
+            //return dDotV - deltaSqrt;
+        //}
     }
-    return -1.0f; // Indicates no hit
+    return std::numeric_limits<float>::infinity(); // Indicates no hit
 }
 
 Union::Union(int g_num, GzGeometry ** g_p_arr) :

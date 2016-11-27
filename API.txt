@@ -320,6 +320,5 @@ public:
     int putAASetting(GzAASetting *p_aa);
     int putAttribute(int attribute);
     int renderToDisplay();
-// static methods
-    static GzColor shade(const IntersectResult &inter, const GzRay &incRay, const GzGeometry *p_global, const GzLight *p_li_arr[], int num_lights);
+    GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
 };

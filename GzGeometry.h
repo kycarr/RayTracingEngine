@@ -32,6 +32,7 @@ public:
     GzGeometry(const GzMaterial &a_mater);
     GzGeometry(); // Default constructor. Builds with default material.
     virtual IntersectResult intersect(const GzRay &ray) const = 0;
+    //virtual float getIntersectDistance(const GzRay &ray) const = 0;
     //virtual void transform(const GzMatrix &mat) = 0; // This method modifies the geometry according to a general transformation matrix.
 };
 

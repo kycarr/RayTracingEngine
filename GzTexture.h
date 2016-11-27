@@ -26,8 +26,6 @@ public:
     GzColor tex_map(float u, float v);
     // image texture mapping
     GzColor image_tex_func(float u, float v);
-    // checkerbox procedural texture mapping
-    GzColor checker_ptex_func(float u, float v);
 };
 
 #endif

@@ -140,8 +140,7 @@ int ApplicationEngine::Render()
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
         Sphere *p_s0 = new Sphere(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
-        const char *texfile = "tex_check.ppm";
-        GzMaterial mat(GzTexture(texfile, &GzTexture::image_tex_func), 15, 0);
+        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0);
         p_s0->material = mat;
         //GzGeometry scene = constructScene(inFile);
         status = status || m_pRender->putScene(p_s0);

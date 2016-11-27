@@ -104,7 +104,7 @@ int GzRender::renderToDisplay()
 
 GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float bar)
 {
-    if (bar < EPSILON0)
+    if (bar < EPSILON0 || inter.p_geometry == nullptr)
     {
         return GzColor::BLACK;
     }
@@ -114,7 +114,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
     GzColor diffusePart(0.0f, 0.0f, 0.0f);
     GzVector3 incDir = incRay.direction.flip();
     float nDotRay = incDir.dotMultiply(inter.normal);
-    GzVector3 reflectDir = 2 * nDotRay * inter.normal - incDir;
+    GzVector3 reflectDir = 2.0f * nDotRay * inter.normal - incDir;
     GzRay reflectRay(inter.position, reflectDir);
     for (int i = 0; i < this->n_lights; ++i)
     {
@@ -164,7 +164,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
         }
     }
     //TODO
-    //reflectPart = reflectPart + this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
+    reflectPart = reflectPart + this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
     reflectPart = reflectPart.exposure();
     diffusePart = diffusePart.exposure();
     return inter.p_geometry->material.r * reflectPart + (1.0f - inter.p_geometry->material.r) * diffusePart;

@@ -42,6 +42,27 @@ Plane::Plane() : Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 
 {
 }
 
+float Plane:: get_intersect_distance(const GzRay &ray) const {
+
+	GzVector3 xUnit(this->bX - this->base);
+	GzVector3 yUnit(this->bY - this->base);
+	GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
+	float dToO(this->base.dotMultiply(normal));
+	float dDotN(ray.direction.dotMultiply(normal));
+	if (dDotN == 0.0f)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+	float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
+	if (distance <= 0.0f)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+
+	return  distance;
+}
+
+
 IntersectResult Plane::intersect(const GzRay &ray) const
 {
     GzVector3 xUnit(this->bX - this->base);
@@ -116,6 +137,15 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     }
 }
 
+float Sphere::get_intersect_distance(const GzRay &ray) const {
+	float result= (Sphere::getRayDistance(this->center, (this->arctic - this->center).length() , ray));
+	if (result < 0) return std::numeric_limits<float>::infinity();
+	else return result;
+	
+}
+
+
+
 float Sphere::getRayDistance(const GzVector3 &c, float r, const GzRay &ray)
 {
     GzVector3 v(c - ray.origin);
@@ -168,16 +198,17 @@ IntersectResult Union::intersect(const GzRay &ray) const
         return IntersectResult::NOHIT;
     }
     // Ugly fix. Should have better way but need to refactor code about intersection.
+	float nearestDistance = std::numeric_limits<float>::infinity();
     int nearestIndex = -1;
     //IntersectResult nearest(IntersectResult::NOHIT);
-    float nearestDistance = std::numeric_limits<float>::infinity();
+   
     for (int i = 0; i < this->num; ++i)
     {
-        IntersectResult tempResult(this->gArray[i]->intersect(ray));
-        if (tempResult.distance < nearestDistance)
+       float tempResult(this->gArray[i]->get_intersect_distance(ray));
+        if (tempResult < nearestDistance)
         {
             nearestIndex = i;
-            nearestDistance = tempResult.distance;
+            nearestDistance = tempResult;
             //nearest = tempResult;
         }
     }

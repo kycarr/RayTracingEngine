@@ -247,6 +247,77 @@ IntersectResult Union::intersect(const GzRay &ray) const
 
 
 
+Rec::Rec(const GzVector3 &ori, const GzVector3 &x,
+	const GzVector3 &y, const GzMaterial &a_mat) :
+	GzGeometry(a_mat), base(ori),
+	bX(x + base),
+	bY(y + base)
+{
+}
+
+Rec::Rec() : Rec(GzVector3(0.0f, 1.0f, 0.0f), GzVector3(0.0f, 1.0f, 0.0f), GzVector3(0.0f, 0.0f, 1.5f))
+{
+}
+
+float Rec::getIntersectDistance(const GzRay &ray) const {
+
+	GzVector3 xUnit(this->bX - this->base);
+	GzVector3 yUnit(this->bY - this->base);
+	GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
+	float dToO(this->base.dotMultiply(normal));
+	float dDotN(ray.direction.dotMultiply(normal));
+	if (dDotN == 0.0f)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+	float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
+	if (distance <= 0.0f)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+	GzVector3 interPos(ray.getPoint(distance));
+	GzVector3 diff(interPos - this->base);
+
+	float diffDotX = diff.dotMultiply(xUnit) / (xUnit.length());
+	float diffDotY = diff.dotMultiply(yUnit) / (yUnit.length());
+
+	if (diffDotX >= 0 && diffDotX < xUnit.length() && diffDotY >= 0 && diffDotY < yUnit.length()) return distance;
+	else return std::numeric_limits<float>::infinity();
+
+
+}
+
+
+IntersectResult Rec::intersect(const GzRay &ray) const
+{
+	GzVector3 xUnit(this->bX - this->base);
+	GzVector3 yUnit(this->bY - this->base);
+	GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
+	float dToO(this->base.dotMultiply(normal));
+	float dDotN(ray.direction.dotMultiply(normal));
+	if (dDotN == 0.0f)
+	{
+		return IntersectResult::NOHIT;
+	}
+	float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
+	if (distance <= 0.0f)
+	{
+		return IntersectResult::NOHIT;
+	}
+	GzVector3 interPos(ray.getPoint(distance));
+	GzVector3 diff(interPos - this->base);
+
+	float diffDotX = diff.dotMultiply(xUnit) / (xUnit.length());
+	float diffDotY = diff.dotMultiply(yUnit) / (yUnit.length());
+	if (!(diffDotX >= 0 && diffDotX < xUnit.length() && diffDotY >= 0 && diffDotY < yUnit.length()))  return IntersectResult::NOHIT;
+	// For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
+
+
+	return IntersectResult(this, distance, interPos, normal, diffDotX, diffDotY);
+}
+
+
+
 
 
 

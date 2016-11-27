@@ -54,6 +54,9 @@ public:
 	virtual float getIntersectDistance(const GzRay &ray) const;
 };
 
+
+
+
 class Sphere: public GzGeometry
 {
 public:

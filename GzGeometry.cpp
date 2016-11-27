@@ -79,6 +79,9 @@ IntersectResult Plane::intersect(const GzRay &ray) const
     return IntersectResult(this, distance, interPos, normal, u, v);
 }
 
+
+
+
 Sphere::Sphere(const GzVector3 &c, float radius, const GzMaterial &a_mat,
     const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe) : GzGeometry(a_mat),
     center(c), arctic(c + radius * z_axe.normalize()), 
@@ -241,4 +244,9 @@ IntersectResult Union::intersect(const GzRay &ray) const
     }
     return IntersectResult::NOHIT;
 }
+
+
+
+
+
 

@@ -106,8 +106,7 @@ int ApplicationEngine::Render()
     try
     {
         // Initialize Display
-        //m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
-        m_pDisplay->init(GzColor(0.2f, 0.2f, 0.2f));
+        m_pDisplay->init(GzColor(0.4f, 0.8f, 1.0f));
 
         // I/O File open. Temporary
         //

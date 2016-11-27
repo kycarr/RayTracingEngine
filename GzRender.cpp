@@ -116,12 +116,22 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, const
             //if light source not visible
             //continue;
             lightDir = p_li_arr[i]->position;
+            GzRay shadowRay(inter.position, lightDir);
+            if (p_global->intersect(shadowRay).p_geometry)
+            {
+                continue;
+            }
         }
         else if (p_li_arr[i]->type == POINT_LIGHT)
         {
             //if light source not visible
             //continue;
             lightDir = (p_li_arr[i]->position - inter.position).normalize();
+            GzRay shadowRay(inter.position, lightDir);
+            if (p_global->intersect(shadowRay).distance <= (p_li_arr[i]->position - inter.position).length())
+            {
+                continue;
+            }
         }
         // Common part for dir light and point light
         GzVector3 incDir = incRay.direction.flip();

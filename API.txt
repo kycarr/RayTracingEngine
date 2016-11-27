@@ -171,6 +171,20 @@ class GzGeometry // Base class
 // Even for an infinite plane, every point on the plane need a texture coordinate. And you need to find out how.
 };
 
+class Plane: public GzGeometry
+{
+// attributes
+    GzVector3 base;
+    GzVector3 bX;
+    GzVector3 bY;
+// constructors
+    Plane(const GzVector3 &n, float dToOrigin, const GzVector3 &u_axe,
+            const GzMaterial &a_mat = GzMaterial::DEFAULT);
+    Plane(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+};
+
 class Sphere: public GzGeometry
 {
 // attributes
@@ -295,69 +309,7 @@ public:
     int putScene(GzGeometry *p_sce);
     int putAASetting(GzAASetting *p_aa);
     int putAttribute(int attribute);
+    int renderToDisplay();
 // static methods
     static GzColor shade(const IntersectResult &inter, const GzRay &incRay, const GzGeometry *p_global, const GzLight *p_li_arr[], int num_lights);
 };
-
-class GzRender
-{
-// attributes
- GzDisplay *display;  // reference to display (for pixel buffer)
- GzCamera camera;  // camera (ray origin) in the scene
- GzGeometry scene[];  // geometry objects in the scene
- GzLight lights[];  // lights in the scene
- int attribute;   // 
- 
-// constructors
- GzRender(GzDisplay *_display) : display(_display) {}
-// methods
- void putCamera(GzCamera _camera);
- void putLights(GzLight _lights[]);
- void putScene(GzGeometry _scene[]);
- void putAttribute(int _attribute);
- bool isReady()
- {
-  return camera != null && lights != null && scene != null;
- }
- void renderToDisplay()
- {
-  // get # of objects in scene, if 0 no intersections possible (just show bg)
-  int num_objects = sizeof(scene)/sizeof(*scene);
-  if (num_objects < 1)
-   return;
-
-  // for each pixel of the screen
-  for (int y = 0; y < display->yres; ++y)
-  {
-   for (int x = 0; x < display->xres; ++x)
-   {
-    GzColor final_color = GzColor(0.0f, 0.0f, 0.0f);
-    GzRay ray = GzRay(camera.position, GzVector3(x, y, -1000.0f));
-
-    IntersectResult closestIntersection = scene[0].intersect(ray);
-    GzColor computed_color = GzColor(0.0f, 0.0f, 0.0f);
-
-    // for each object in the scene
-    for (int i = 1; i < num_objects; i++)
-    {
-     // determine closest ray-object intersection
-     IntersectResult result = scene[i].intersect(ray);
-     if (result.distance < closestIntersection.distance)
-     {
-      closestIntersection = result;
-     }
-    }
-    // if intersection exists
-    if (closestIntersection.geometry != null) // Are you writing Java?
-    {
-     // for each light in the scene, if light is not in shadow of another object:
-     computed_color += closestIntersection.shade(lights);
-    }
-    // not too sure how we plan on doing reflection factors (part of geometry material, would shade take care of this?)
-    final_color += computed_color * reflection_factor;
-    reflection_factor *= surface_reflection_property;
-    display->putDisplay(x, y, final_color);
-   }
-  }
- }
-}

@@ -30,6 +30,41 @@ GzGeometry::GzGeometry() : material(GzMaterial::DEFAULT)
 {
 }
 
+Plane::Plane(const GzVector3 &n, float dToOrigin,
+        const GzVector3 &u_axe, const GzMaterial &a_mat) :
+        GzGeometry(a_mat), base(n.normalize() * dToOrigin), 
+        bX(u_axe.normalize() + base),
+        bY(n.normalize().crossMultiply(u_axe.normalize()) + base)
+{
+}
+
+Plane::Plane() : Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f))
+{
+}
+
+IntersectResult Plane::intersect(const GzRay &ray) const
+{
+    GzVector3 xUnit(this->bX - this->base);
+    GzVector3 yUnit(this->bY - this->base);
+    GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
+    float dToO(this->base.dotMultiply(normal));
+    float dDotN(ray.direction.dotMultiply(normal));
+    if (dDotN == 0.0f)
+    {
+        return IntersectResult::NOHIT;
+    }
+    float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
+    if (distance <= 0.0f)
+    {
+        return IntersectResult::NOHIT;
+    }
+    GzVector3 interPos(ray.getPoint(distance));
+    // For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
+    float u((interPos - this->base).dotMultiply(xUnit));
+    float v((interPos - this->base).dotMultiply(yUnit));
+    return IntersectResult(this, distance, interPos, normal, u, v);
+}
+
 Sphere::Sphere(const GzVector3 &c, float radius, const GzMaterial &a_mat,
     const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe) : GzGeometry(a_mat),
     center(c), arctic(c + radius * z_axe.normalize()), 

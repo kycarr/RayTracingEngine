@@ -35,6 +35,22 @@ public:
     //virtual void transform(const GzMatrix &mat) = 0; // This method modifies the geometry according to a general transformation matrix.
 };
 
+class Plane: public GzGeometry
+{
+public:
+// attributes
+    GzVector3 base;
+    GzVector3 bX;
+    GzVector3 bY;
+// constructors
+    Plane(const GzVector3 &n, float dToOrigin,
+            const GzVector3 &u_axe,
+            const GzMaterial &a_mat = GzMaterial::DEFAULT);
+    Plane(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+};
+
 class Sphere: public GzGeometry
 {
 public:

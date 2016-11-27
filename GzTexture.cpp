@@ -96,7 +96,7 @@ GzColor GzTexture::image_tex_func(float u, float v)
 /* Checkerboard procedural texture function */
 GzColor GzTexture::checker_ptex_func(float u, float v)
 {
-    int scale = 20;
+    int scale = 1;
     //u = max(0, u);
     //u = min(u, 1);
     //v = max(0, v);

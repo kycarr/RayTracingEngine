@@ -146,7 +146,7 @@ int ApplicationEngine::Render()
 
         //*******************************
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
-        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0.0f);
+        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0.4f);
         GzGeometry ** p_geos = new GzGeometry*[2];
         p_geos[0] = new Sphere(GzVector3(0.0f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor::RED, 16.0f, 0));
         p_geos[1] = new Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f), mat);

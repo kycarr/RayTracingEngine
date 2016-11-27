@@ -104,6 +104,10 @@ int GzRender::renderToDisplay()
 
 GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float bar)
 {
+    if (bar < EPSILON0)
+    {
+        return GzColor::BLACK;
+    }
     //GzColor computedColor(0.0f, 0.0f, 0.0f);
     //GzColor specularPart = inter.p_geometry->material.reflectiveness * specularLight(inter, *p_li_arr);
     GzColor reflectPart(0.0f, 0.0f, 0.0f);
@@ -160,6 +164,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
         }
     }
     //TODO
+    //reflectPart = reflectPart + this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
     reflectPart = reflectPart.exposure();
     diffusePart = diffusePart.exposure();
     return inter.p_geometry->material.r * reflectPart + (1.0f - inter.p_geometry->material.r) * diffusePart;

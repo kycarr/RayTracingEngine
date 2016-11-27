@@ -71,6 +71,9 @@ IntersectResult Plane::intersect(const GzRay &ray) const
     }
     GzVector3 interPos(ray.getPoint(distance));
     // For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
+    GzVector3 xUnit(this->bX - this->base);
+    GzVector3 yUnit(this->bY - this->base);
+    GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
     float u((interPos - this->base).dotMultiply(xUnit));
     float v((interPos - this->base).dotMultiply(yUnit));
     return IntersectResult(this, distance, interPos, normal, u, v);
@@ -128,11 +131,12 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
 
 float Sphere::getIntersectDistance(const GzRay &ray) const
 {
-    GzVector3 v(c - ray.origin);
+    GzVector3 v(this->center - ray.origin);
+    float r((this->arctic - this->center).length());
     float dDotV = ray.direction.dotMultiply(v);
     float delta = dDotV * dDotV - v.lengthSqr() + r * r;
     // If no hit, return inf. Tangent line? Need to check more
-    if (delta >= 0)
+    if (delta >= 0.0f)
     {
         float deltaSqrt = std::sqrt(delta);
         if (dDotV <= 0.0f)

@@ -42,19 +42,30 @@ Plane::Plane() : Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 
 {
 }
 
+float Plane:: getIntersectDistance(const GzRay &ray) const
+{
+	GzVector3 xUnit(this->bX - this->base);
+	GzVector3 yUnit(this->bY - this->base);
+	GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
+	float dToO(this->base.dotMultiply(normal));
+	float dDotN(ray.direction.dotMultiply(normal));
+	if (dDotN == 0.0f)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+	float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
+	if (distance <= EPSILON0)
+	{
+		return std::numeric_limits<float>::infinity();
+	}
+	return distance;
+}
+
+
 IntersectResult Plane::intersect(const GzRay &ray) const
 {
-    GzVector3 xUnit(this->bX - this->base);
-    GzVector3 yUnit(this->bY - this->base);
-    GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
-    float dToO(this->base.dotMultiply(normal));
-    float dDotN(ray.direction.dotMultiply(normal));
-    if (dDotN == 0.0f)
-    {
-        return IntersectResult::NOHIT;
-    }
-    float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
-    if (distance <= 0.005f)
+    float distance(getIntersectDistance(ray));
+    if (distance >= std::numeric_limits<float>::infinity())
     {
         return IntersectResult::NOHIT;
     }
@@ -80,7 +91,7 @@ Sphere::Sphere() : Sphere(GzVector3(0.0f, 0.0f, 0.0f), 1.0f)
 IntersectResult Sphere::intersect(const GzRay &ray) const
 {
     float radius((this->arctic - this->center).length());
-    float distance(Sphere::getRayDistance(this->center, radius, ray));
+    float distance(Sphere::getIntersectDistance(ray));
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
@@ -111,17 +122,16 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     }
     else
     {
-        // getRayDistance returns -1, which indicates no hit. If hit, getRayDistance always returns a positive number.
         return IntersectResult::NOHIT;
     }
 }
 
-float Sphere::getRayDistance(const GzVector3 &c, float r, const GzRay &ray)
+float Sphere::getIntersectDistance(const GzRay &ray) const
 {
     GzVector3 v(c - ray.origin);
     float dDotV = ray.direction.dotMultiply(v);
     float delta = dDotV * dDotV - v.lengthSqr() + r * r;
-    // If no hit, return -1. Tangent line? Need to check more
+    // If no hit, return inf. Tangent line? Need to check more
     if (delta >= 0)
     {
         float deltaSqrt = std::sqrt(delta);
@@ -184,24 +194,41 @@ Union::~Union()
     delete[] this->gArray;
 }
 
+float Union::getIntersectDistance(const GzRay &ray) const
+{
+    if (this->num < 1)
+    {
+        return std::numeric_limits<float>::infinity();
+    }
+	float nearestDistance = std::numeric_limits<float>::infinity();
+    int nearestIndex = -1;
+    for (int i = 0; i < this->num; ++i)
+    {
+       float tempResult(this->gArray[i]->getIntersectDistance(ray));
+        if (tempResult < nearestDistance)
+        {
+            nearestIndex = i;
+            nearestDistance = tempResult;
+        }
+    }
+    return nearestDistance;
+}
+
 IntersectResult Union::intersect(const GzRay &ray) const
 {
     if (this->num < 1)
     {
         return IntersectResult::NOHIT;
     }
-    // Ugly fix. Should have better way but need to refactor code about intersection.
+	float nearestDistance = std::numeric_limits<float>::infinity();
     int nearestIndex = -1;
-    //IntersectResult nearest(IntersectResult::NOHIT);
-    float nearestDistance = std::numeric_limits<float>::infinity();
     for (int i = 0; i < this->num; ++i)
     {
-        IntersectResult tempResult(this->gArray[i]->intersect(ray));
-        if (tempResult.distance < nearestDistance)
+       float tempResult(this->gArray[i]->getIntersectDistance(ray));
+        if (tempResult < nearestDistance)
         {
             nearestIndex = i;
-            nearestDistance = tempResult.distance;
-            //nearest = tempResult;
+            nearestDistance = tempResult;
         }
     }
     if (nearestIndex >= 0)

@@ -181,8 +181,10 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationEngine.h" />
     <ClInclude Include="gz.h" />
+    <ClInclude Include="GzAASetting.h" />
     <ClInclude Include="GzCamera.h" />
     <ClInclude Include="GzColor.h" />
+    <ClInclude Include="GzConstants.h" />
     <ClInclude Include="GzDisplay.h" />
     <ClInclude Include="GzException.h" />
     <ClInclude Include="GzGeometry.h" />
@@ -204,6 +206,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationEngine.cpp" />
+    <ClCompile Include="GzAASetting.cpp" />
     <ClCompile Include="GzCamera.cpp" />
     <ClCompile Include="GzColor.cpp" />
     <ClCompile Include="GzDisplay.cpp" />
@@ -237,6 +240,9 @@
     <Image Include="res\RayTracingEngine.ico" />
     <Image Include="res\RayTracingEngineDoc.ico" />
     <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="API.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -32,7 +32,8 @@ public:
     GzGeometry(const GzMaterial &a_mater);
     GzGeometry(); // Default constructor. Builds with default material.
     virtual IntersectResult intersect(const GzRay &ray) const = 0;
-	virtual float get_intersect_distance(const GzRay &ray) const = 0;
+    virtual float getIntersectDistance(const GzRay &ray) const = 0;
+	//virtual float getIntersectDistance(const GzRay &ray) const = 0;
     //virtual void transform(const GzMatrix &mat) = 0; // This method modifies the geometry according to a general transformation matrix.
 };
 
@@ -50,7 +51,7 @@ public:
     Plane(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
 // methods
     virtual IntersectResult intersect(const GzRay &ray) const;
-	virtual float get_intersect_distance(const GzRay &ray) const;
+	virtual float getIntersectDistance(const GzRay &ray) const;
 };
 
 class Sphere: public GzGeometry
@@ -70,10 +71,10 @@ public:
     Sphere();
 // methods
     virtual IntersectResult intersect(const GzRay &ray) const;
-	virtual float get_intersect_distance(const GzRay &ray) const;
-protected:
+	virtual float getIntersectDistance(const GzRay &ray) const;
+//protected:
 // static methods
-    static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
+    //static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
 };
 
 //class Ellipsoid: public Sphere
@@ -94,7 +95,7 @@ public:
     ~Union();
 // methods
     virtual IntersectResult intersect(const GzRay &ray) const;
-	
+	virtual float getIntersectDistance(const GzRay &ray) const;
 };
 
 #endif

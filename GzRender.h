@@ -29,12 +29,10 @@ public:
     int putScene(GzGeometry *p_sce);
     int putAASetting(GzAASetting *p_aa);
     int putAttribute(int attribute);
-    //bool isReady() const;
+
     int renderToDisplay();
 
-
-//static function
-    static GzColor shade(const IntersectResult &inter, const GzRay &incRay, const GzGeometry *p_global, GzLight *p_li_arr[], int num_lights);
+    GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
 };
 
 #endif

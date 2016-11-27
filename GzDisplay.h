@@ -15,6 +15,7 @@ class GzDisplay
     GzPixel *fbuf;
 public:
     short xres, yres;
+    GzColor bgColor;
     GzDisplay();
     GzDisplay(int a_xRes, int a_yRes);
     ~GzDisplay();

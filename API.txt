@@ -10,7 +10,7 @@ const int COORD4_BOUND(4);
 class GzException
 {
 // constructors
-    ArrayException();
+    GzException();
 };
 
 class GzVector3
@@ -116,6 +116,40 @@ class GzPixel
     static unsigned short ctoi(float color);
 };
 
+class GzAASetting
+{
+// attributes
+    int kernelSize;
+    GzVector3 *ker;
+// constructors
+    GzAASetting(int k_size, GzVector3 * k_array); // for user-defined filter
+    GzAASetting(int k_size_sqrt); // for regular grid filter
+private:
+    GzAASetting(); // Default constructor. Disabled by using private.
+// destructor
+public:
+    ~GzAASetting();
+};
+
+class GzMaterial
+{
+// attributes
+    GzColor Kd;   // diffuse color
+    float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
+    // add texture component later
+    // add refractive index later
+    float r; // reflective part
+    //float f; // refractive part
+	GzTexture texture;
+
+// constructors
+    GzMaterial(const GzColor &kd, float a_s,  float a_r);
+    GzMaterial(const GzTexture &tex, float a_s, float a_r);
+    GzMaterial();
+// static member
+    const static GzMaterial DEFAULT;
+};
+
 class IntersectResult
 {
 // attributes
@@ -123,14 +157,12 @@ class IntersectResult
     const float distance;
     const GzVector3 position;
     const GzVector3 normal; // For refractive feature calculation, perhaps the normal vector should always point outward.
-    //const float u, v; // Do it later
+    const float u, v;
 // constructors
     // Pre: a_nor is a normalized vector. No checking inside.
-    //IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
     IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor);
     IntersectResult(); // Default constructor. Build a NOHIT object.
-// methods
-    //shade(GzLight[]); // not decided
 // static members
     const static IntersectResult NOHIT;
 };
@@ -158,6 +190,20 @@ class GzGeometry // Base class
 // Even for an infinite plane, every point on the plane need a texture coordinate. And you need to find out how.
 };
 
+class Plane: public GzGeometry
+{
+// attributes
+    GzVector3 base;
+    GzVector3 bX;
+    GzVector3 bY;
+// constructors
+    Plane(const GzVector3 &n, float dToOrigin, const GzVector3 &u_axe,
+            const GzMaterial &a_mat = GzMaterial::DEFAULT);
+    Plane(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+};
+
 class Sphere: public GzGeometry
 {
 // attributes
@@ -168,9 +214,10 @@ class Sphere: public GzGeometry
     // These attributes is for utilizing the spherical coordinate system.
 // constructors
     Sphere(const GzVector3 &c, float radius,
-            const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
-            const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
-            const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
+            const GzMaterial &a_mat = GzMaterial::DEFAULT,
+            const GzVector3 &x_axe = GzVector3(0.0f, 0.0f, 1.0f),
+            const GzVector3 &y_axe = GzVector3(1.0f, 0.0f, 0.0f),
+            const GzVector3 &z_axe = GzVector3(0.0f, 1.0f, 0.0f));
     // This constructor has three relative vectors, because it is more natural for the user to specify a sphere in this way. The sphere class does not use them directly as attributes, but convert them to absolute positions to store.
     Sphere(); // Default constructor. Build a unit sphere in the world space.
 // methods
@@ -193,25 +240,18 @@ class Ellipsoid: public Sphere
     // You can call Sphere::getRayDistance function to help when implementing this intersect function
 };
 
-class GzMaterial
+class Union: public GzGeometry
 {
 // attributes
-    GzColor Kd;   // diffuse color
-    GzColor Ka;   // ambient color
-    // We might not need Ka at all later for our project. We can keep it now.
-    GzColor Ks;   // specular color
-    // Same for Ks. Perhaps Ks could be represented by a reflectiveness coefficient. We can keep it now.
-    float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
-    // add texture component later
-    // add refractive index later
-    float r; // reflective part
-    //float f; // refractive part
-
+    int num;
+    GzGeometry ** gArray;
 // constructors
-    GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
-    GzMaterial();
-// static member
-    const static GzMaterial DEFAULT;
+    Union(int g_num, GzGeometry ** g_p_arr);
+    Union();
+// destructor
+    ~Union();
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
 };
 
 class GzLight
@@ -235,6 +275,7 @@ class GzDisplay
 {
 // attributes
     short xres, yres;
+	GzColor bgColor;
 // constructors
     GzDisplay(int a_xRes, a_yRes);
     GzDisplay(); // Default constructor. Build a display with max resolutions.
@@ -262,6 +303,7 @@ private:
     GzLight **p_light_arr; // Array of pointers
     int n_lights;
     GzGeometry *p_scene; // Union geometry object or one object. Not an array
+    GzAASetting *p_AA; // By default there will be one AA setting. Can be re-written.
     // These pointers above must be dynamically allocated.
     int options;
 // constructors
@@ -272,73 +314,12 @@ public:
 // destructor
     ~GzRender();
 // methods
-    int putCamera(const GzCamera *p_cam);
-    int putLights(const GzLight **p_li_arr);
-    int putScene(const GzGeometry *p_sce);
+    int putCamera(GzCamera *p_cam);
+    int putLights(GzLight **p_li_arr);
+    int putScene(GzGeometry *p_sce);
+    int putAASetting(GzAASetting *p_aa);
     int putAttribute(int attribute);
+    int renderToDisplay();
 // static methods
     static GzColor shade(const IntersectResult &inter, const GzRay &incRay, const GzGeometry *p_global, const GzLight *p_li_arr[], int num_lights);
 };
-
-class GzRender
-{
-// attributes
- GzDisplay *display;  // reference to display (for pixel buffer)
- GzCamera camera;  // camera (ray origin) in the scene
- GzGeometry scene[];  // geometry objects in the scene
- GzLight lights[];  // lights in the scene
- int attribute;   // 
- 
-// constructors
- GzRender(GzDisplay *_display) : display(_display) {}
-// methods
- void putCamera(GzCamera _camera);
- void putLights(GzLight _lights[]);
- void putScene(GzGeometry _scene[]);
- void putAttribute(int _attribute);
- bool isReady()
- {
-  return camera != null && lights != null && scene != null;
- }
- void renderToDisplay()
- {
-  // get # of objects in scene, if 0 no intersections possible (just show bg)
-  int num_objects = sizeof(scene)/sizeof(*scene);
-  if (num_objects < 1)
-   return;
-
-  // for each pixel of the screen
-  for (int y = 0; y < display->yres; ++y)
-  {
-   for (int x = 0; x < display->xres; ++x)
-   {
-    GzColor final_color = GzColor(0.0f, 0.0f, 0.0f);
-    GzRay ray = GzRay(camera.position, GzVector3(x, y, -1000.0f));
-
-    IntersectResult closestIntersection = scene[0].intersect(ray);
-    GzColor computed_color = GzColor(0.0f, 0.0f, 0.0f);
-
-    // for each object in the scene
-    for (int i = 1; i < num_objects; i++)
-    {
-     // determine closest ray-object intersection
-     IntersectResult result = scene[i].intersect(ray);
-     if (result.distance < closestIntersection.distance)
-     {
-      closestIntersection = result;
-     }
-    }
-    // if intersection exists
-    if (closestIntersection.geometry != null) // Are you writing Java?
-    {
-     // for each light in the scene, if light is not in shadow of another object:
-     computed_color += closestIntersection.shade(lights);
-    }
-    // not too sure how we plan on doing reflection factors (part of geometry material, would shade take care of this?)
-    final_color += computed_color * reflection_factor;
-    reflection_factor *= surface_reflection_property;
-    display->putDisplay(x, y, final_color);
-   }
-  }
- }
-}

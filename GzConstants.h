@@ -6,6 +6,12 @@
 // int values used as status indicators
 const int GZ_SUCCESS(0);
 const int GZ_FAILURE(1);
+
+// int values used as light type
+const int DIR_LIGHT(0);
+const int POINT_LIGHT(1);
+const int AREA_LIGHT(2);
+
 // for math calculations
 const double PI(3.1415926535897932);
 

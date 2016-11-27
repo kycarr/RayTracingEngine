@@ -63,13 +63,14 @@ int GzDisplay::index(int i, int j) const
 
 void GzDisplay::init(const GzColor &back)
 {
-    for (int j = 0; j < this->yres; ++j)
-    {
-        for (int i = 0; i < this->xres; ++i)
-        {
-            this->fbuf[index(i, j)].putColor(back);
-        }
-    }
+    this->bgColor = back;
+    //for (int j = 0; j < this->yres; ++j)
+    //{
+        //for (int i = 0; i < this->xres; ++i)
+        //{
+            //this->fbuf[index(i, j)].putColor(back);
+        //}
+    //}
 }
 
 void GzDisplay::putDisplay(int i, int j, const GzPixel &p)

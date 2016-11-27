@@ -54,10 +54,12 @@ int ApplicationEngine::Initialize()
 
         status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
 
-        GzCamera *p_camera = new GzCamera();
-        GzLight **g_lights = new GzLight*[2];
-        g_lights[0] = new GzLight(0, GzVector3(10.0f, 10.0f, -10));
-        g_lights[1] = new GzLight(0, GzVector3(-10.0f, 10.0f, -10), GzColor::CYAN);
+        GzCamera *p_camera = new GzCamera(GzVector3(0.0f, 10.0f, -10.0f), GzVector3(0.0f, 0.0f, 0.0f), GzVector3(0.0f, 1.0f, 0.0f), 116.0f);
+        GzLight **g_lights = new GzLight*[1];
+        //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(10.0f, 10.0f, -10), GzColor::GREEN);
+        //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(0, 1.0f, 0), GzColor::WHITE);
+        g_lights[0] = new GzLight(POINT_LIGHT, GzVector3(0, 20.0f, 0), GzColor::WHITE);
+        //g_lights[1] = new GzLight(DIR_LIGHT, GzVector3(-10.0f, 10.0f, -10), GzColor::RED);
         //GzMaterial mTemp1;
         //GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
         // We'll do AA in renderer directly.
@@ -69,8 +71,14 @@ int ApplicationEngine::Initialize()
         m_pRender = new GzRender(m_pDisplay);
         status = status || m_pRender->putCamera(p_camera);
 
-        status = status || m_pRender->putLights(g_lights, 2);
-        //status = status || renderer.putAAsetting(AAmethod); //optional
+        status = status || m_pRender->putLights(g_lights, 1);
+        //GzVector3 *kernel4 = new GzVector3[4];
+        //kernel4[0] = GzVector3(-0.25f, 0.25f, 0.25f);
+        //kernel4[1] = GzVector3(0.25f, 0.25f, 0.25f);
+        //kernel4[2] = GzVector3(-0.25f, -0.25f, 0.25f);
+        //kernel4[3] = GzVector3(0.25f, -0.25f, 0.25f);
+        GzAASetting *p_9SAA = new GzAASetting(3);
+        status = status || m_pRender->putAASetting(p_9SAA); //optional
         //status = status || renderer.putAttribute(refractionmode); //optional
         //status = status || renderer.putAttribute(diffusemode); //optional
         //status = status || renderer.putAttribute(arealightmode); //optional
@@ -80,7 +88,7 @@ int ApplicationEngine::Initialize()
         // rendering inside Render() function.
         //************************
     }
-    catch (GzException e)
+    catch (GzException)
     {
         status = GZ_FAILURE;
     }
@@ -138,12 +146,15 @@ int ApplicationEngine::Render()
 
         //*******************************
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
-        Sphere *p_s0 = new Sphere(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
+        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0.0f);
+        GzGeometry ** p_geos = new GzGeometry*[2];
+        p_geos[0] = new Sphere(GzVector3(0.0f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor::RED, 16.0f, 0));
+        p_geos[1] = new Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f), mat);
+        GzGeometry * p_unionGeometry = new Union(2, p_geos);
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
-        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0);
-        p_s0->material = mat;
+        //p_s0->material = mat;
         //GzGeometry scene = constructScene(inFile);
-        status = status || m_pRender->putScene(p_s0);
+        status = status || m_pRender->putScene(p_unionGeometry);
         status = status || m_pRender->renderToDisplay();
         //*******************************
 
@@ -164,7 +175,7 @@ int ApplicationEngine::Render()
             AfxMessageBox(_T("The output file was not closed\n"));
         }
     }
-    catch (GzException e)
+    catch (GzException)
     {
         status = GZ_FAILURE;
     }

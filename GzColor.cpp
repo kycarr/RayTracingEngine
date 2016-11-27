@@ -27,7 +27,7 @@ const GzColor GzColor::YELLOW(1.0f, 1.0f, 0.0f);
 
 GzColor GzColor::exposure() const
 {
-    return GzColor(-std::expm1(-this->r), -std::expm1(-this->g), -std::expm1(-this->b));
+    return GzColor(-std::expm1(-this->r*2), -std::expm1(-this->g*2), -std::expm1(-this->b*2));
 }
 
 GzColor operator+(const GzColor &c1, const GzColor &c2)

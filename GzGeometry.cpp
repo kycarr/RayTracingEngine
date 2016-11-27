@@ -5,7 +5,7 @@
 
 // Encapsulate u and v?
 IntersectResult::IntersectResult(const GzGeometry *p_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v) :
-    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(a_v), v(a_v)
+    p_geometry(p_geo), distance(a_dis), position(a_pos), normal(a_nor), u(a_u), v(a_v)
 {
 }
 
@@ -30,9 +30,44 @@ GzGeometry::GzGeometry() : material(GzMaterial::DEFAULT)
 {
 }
 
-Sphere::Sphere(const GzVector3 &c, float radius,
-    const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe) :
-    center(c), arctic(c + radius * z_axe.normalize()),
+Plane::Plane(const GzVector3 &n, float dToOrigin,
+        const GzVector3 &u_axe, const GzMaterial &a_mat) :
+        GzGeometry(a_mat), base(n.normalize() * dToOrigin), 
+        bX(u_axe.normalize() + base),
+        bY(n.normalize().crossMultiply(u_axe.normalize()) + base)
+{
+}
+
+Plane::Plane() : Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f))
+{
+}
+
+IntersectResult Plane::intersect(const GzRay &ray) const
+{
+    GzVector3 xUnit(this->bX - this->base);
+    GzVector3 yUnit(this->bY - this->base);
+    GzVector3 normal(xUnit.crossMultiply(yUnit).normalize());
+    float dToO(this->base.dotMultiply(normal));
+    float dDotN(ray.direction.dotMultiply(normal));
+    if (dDotN == 0.0f)
+    {
+        return IntersectResult::NOHIT;
+    }
+    float distance((dToO - ray.origin.dotMultiply(normal)) / dDotN);
+    if (distance <= 0.0f)
+    {
+        return IntersectResult::NOHIT;
+    }
+    GzVector3 interPos(ray.getPoint(distance));
+    // For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
+    float u((interPos - this->base).dotMultiply(xUnit));
+    float v((interPos - this->base).dotMultiply(yUnit));
+    return IntersectResult(this, distance, interPos, normal, u, v);
+}
+
+Sphere::Sphere(const GzVector3 &c, float radius, const GzMaterial &a_mat,
+    const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe) : GzGeometry(a_mat),
+    center(c), arctic(c + radius * z_axe.normalize()), 
     long_x(c + radius * x_axe.normalize()),
     long_y(c + radius * y_axe.normalize())
 {
@@ -49,12 +84,18 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
-        GzVector3 n = (interPos - center).normalize();
-        const double pi = 3.1415926535897;
-        float u = 0.5 + atan2(n.x, n.z) / (2 * pi);
-        float v = 0.5 + n.y * 0.5;
-        //float u = asin(n.x)/pi + 0.5;
-        //float v = asin(n.y)/pi + 0.5;
+        GzVector3 relative(interPos - center);
+        GzVector3 n(relative.normalize());
+        float theta = std::acos(n.dotMultiply((this->arctic - this->center).normalize()));
+        float v = static_cast<float>(theta / PI);
+        float u = 0.0f;
+        if (v != 0.0f && v != 1.0f)
+        {
+            float cosPhiL = n.dotMultiply(this->long_x - this->center);
+            float sinPhiL = n.dotMultiply(this->long_y - this->center);
+            float phi = std::atan2(sinPhiL, cosPhiL);
+            u = static_cast<float>(phi / (2*PI) + 0.5);
+        }
         return IntersectResult(this, distance, interPos, (interPos - this->center).normalize(), u, v);
         //float o2c((this->center - ray.origin).length());
         //if (o2c < radius)
@@ -101,3 +142,49 @@ float Sphere::getRayDistance(const GzVector3 &c, float r, const GzRay &ray)
     }
     return -1.0f; // Indicates no hit
 }
+
+Union::Union(int g_num, GzGeometry ** g_p_arr) :
+    num(g_num), gArray(g_p_arr)
+{
+}
+
+Union::Union() : Union(0, nullptr)
+{
+}
+
+Union::~Union()
+{
+    for (int i = 0; i < this->num; ++i)
+    {
+        delete this->gArray[i];
+    }
+    delete[] this->gArray;
+}
+
+IntersectResult Union::intersect(const GzRay &ray) const
+{
+    if (this->num < 1)
+    {
+        return IntersectResult::NOHIT;
+    }
+    // Ugly fix. Should have better way but need to refactor code about intersection.
+    int nearestIndex = -1;
+    //IntersectResult nearest(IntersectResult::NOHIT);
+    float nearestDistance = std::numeric_limits<float>::infinity();
+    for (int i = 0; i < this->num; ++i)
+    {
+        IntersectResult tempResult(this->gArray[i]->intersect(ray));
+        if (tempResult.distance < nearestDistance)
+        {
+            nearestIndex = i;
+            nearestDistance = tempResult.distance;
+            //nearest = tempResult;
+        }
+    }
+    if (nearestIndex >= 0)
+    {
+        return this->gArray[nearestIndex]->intersect(ray);
+    }
+    return IntersectResult::NOHIT;
+}
+

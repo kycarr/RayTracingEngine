@@ -3,6 +3,7 @@
 
 #include "GzConstants.h"
 #include "GzCamera.h"
+#include "GzAASetting.h"
 #include "GzGeometry.h"
 #include "GzLight.h"
 #include "GzDisplay.h"
@@ -15,6 +16,7 @@ private:
     GzLight **p_light_arr; // Array of pointers
     int n_lights;
     GzGeometry *p_scene; // Union geometry object. Not an array
+    GzAASetting *p_AA; // By default there will be one AA setting. Can be re-written.
     int options;
 
 private:
@@ -25,7 +27,7 @@ public:
     int putCamera(GzCamera *p_cam);
     int putLights(GzLight **p_li_arr, int num_lights);
     int putScene(GzGeometry *p_sce);
-    //int putAASetting(const GzAASetting *p_AASet);
+    int putAASetting(GzAASetting *p_aa);
     int putAttribute(int attribute);
     //bool isReady() const;
     int renderToDisplay();

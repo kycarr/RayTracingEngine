@@ -142,3 +142,49 @@ float Sphere::getRayDistance(const GzVector3 &c, float r, const GzRay &ray)
     }
     return -1.0f; // Indicates no hit
 }
+
+Union::Union(int g_num, GzGeometry ** g_p_arr) :
+    num(g_num), gArray(g_p_arr)
+{
+}
+
+Union::Union() : Union(0, nullptr)
+{
+}
+
+Union::~Union()
+{
+    for (int i = 0; i < this->num; ++i)
+    {
+        delete this->gArray[i];
+    }
+    delete[] this->gArray;
+}
+
+IntersectResult Union::intersect(const GzRay &ray) const
+{
+    if (this->num < 1)
+    {
+        return IntersectResult::NOHIT;
+    }
+    // Ugly fix. Should have better way but need to refactor code about intersection.
+    int nearestIndex = -1;
+    //IntersectResult nearest(IntersectResult::NOHIT);
+    float nearestDistance = std::numeric_limits<float>::infinity();
+    for (int i = 0; i < this->num; ++i)
+    {
+        IntersectResult tempResult(this->gArray[i]->intersect(ray));
+        if (tempResult.distance < nearestDistance)
+        {
+            nearestIndex = i;
+            nearestDistance = tempResult.distance;
+            //nearest = tempResult;
+        }
+    }
+    if (nearestIndex >= 0)
+    {
+        return this->gArray[nearestIndex]->intersect(ray);
+    }
+    return IntersectResult::NOHIT;
+}
+

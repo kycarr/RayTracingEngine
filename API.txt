@@ -131,6 +131,25 @@ public:
     ~GzAASetting();
 };
 
+class GzMaterial
+{
+// attributes
+    GzColor Kd;   // diffuse color
+    float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
+    // add texture component later
+    // add refractive index later
+    float r; // reflective part
+    //float f; // refractive part
+	GzTexture texture;
+
+// constructors
+    GzMaterial(const GzColor &kd, float a_s,  float a_r);
+    GzMaterial(const GzTexture &tex, float a_s, float a_r);
+    GzMaterial();
+// static member
+    const static GzMaterial DEFAULT;
+};
+
 class IntersectResult
 {
 // attributes
@@ -221,27 +240,18 @@ class Ellipsoid: public Sphere
     // You can call Sphere::getRayDistance function to help when implementing this intersect function
 };
 
-class GzMaterial
+class Union: public GzGeometry
 {
 // attributes
-    GzColor Kd;   // diffuse color
-    GzColor Ka;   // ambient color
-    // We might not need Ka at all later for our project. We can keep it now.
-    GzColor Ks;   // specular color
-    // Same for Ks. Perhaps Ks could be represented by a reflectiveness coefficient. We can keep it now.
-    float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
-    // add texture component later
-    // add refractive index later
-    float r; // reflective part
-    //float f; // refractive part
-	GzTexture texture;
-
+    int num;
+    GzGeometry ** gArray;
 // constructors
-    GzMaterial(const GzColor &kd, const GzColor &ka, const GzColor &ks, float a_s,  float a_r);
-    GzMaterial(const GzTexture &tex, float a_s, float a_r);
-    GzMaterial();
-// static member
-    const static GzMaterial DEFAULT;
+    Union(int g_num, GzGeometry ** g_p_arr);
+    Union();
+// destructor
+    ~Union();
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
 };
 
 class GzLight

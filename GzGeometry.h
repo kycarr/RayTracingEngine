@@ -76,5 +76,22 @@ protected:
 //class Ellipsoid: public Sphere
 //{
 //};
+
+
+class Union: public GzGeometry
+{
+public:
+// attributes
+    int num;
+    GzGeometry ** gArray;
+// constructors
+    Union(int g_num, GzGeometry ** g_p_arr);
+    Union();
+// destructor
+    ~Union();
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+};
+
 #endif
 

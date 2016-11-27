@@ -17,6 +17,7 @@ const double PI(3.1415926535897932);
 
 // for magic numbers
 const int COORD4_BOUND(4);
+const float EPSILON0(0.005f);
 
 //***************************
 // Discarded old codes

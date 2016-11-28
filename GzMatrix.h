@@ -6,10 +6,11 @@
 //
 //
 
-#ifndef GzMatrix_hpp
-#define GzMatrix_hpp
+#ifndef GZMATRIX_H
+#define GZMATRIX_H
+#include "GzVector3.h"
+#include "GzConstants.h"
 
-#include "gz.h"
 class GzMatrix
 {
     // attributes
@@ -18,7 +19,7 @@ class GzMatrix
 public:
     GzMatrix(); // Default constructor. Build an identity matrix in 4-dimensional space.
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
-    GzMatrix(float arc, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
+    GzMatrix(float angle, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
     // methods
     GzMatrix& inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
 }

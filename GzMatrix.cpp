@@ -5,8 +5,7 @@
 //  Created by Peter Piao on 11/17/16.
 //
 //
-
-#include "GzMatrix.hpp"
+#include "GzMatrix.h"
 #include <cmath>
 
 GzMatrix::GzMatrix()
@@ -40,24 +39,24 @@ GzMatrix::GzMatrix(float angle, int axis) : GzMatrix()
     float rad = angle * PI / 180;
     if (axis == X)
     {
-        M[1][1] = cos(rad);
-        M[2][2] = cos(rad);
-        M[2][1] = -sin(rad);
-        M[1][2] = sin(rad);
+        M[1][1] = std::cos(rad);
+        M[2][2] = std::cos(rad);
+        M[2][1] = -std::sin(rad);
+        M[1][2] = std::sin(rad);
     }
     if (axis == Y)
     {
-        M[0][0] = cos(rad);
-        M[3][3] = cos(rad);
-        M[2][0] = sin(rad);
-        M[0][2] = -sin(rad);
+        M[0][0] = std::cos(rad);
+        M[3][3] = std::cos(rad);
+        M[2][0] = std::sin(rad);
+        M[0][2] = -std::sin(rad);
     }
     if (axis == Z)
     {
-        M[0][0] = cos(rad);
-        M[1][1] = cos(rad);
-        M[1][0] = -sin(rad);
-        M[0][1] = sin(rad);
+        M[0][0] = std::cos(rad);
+        M[1][1] = std::cos(rad);
+        M[1][0] = -std::sin(rad);
+        M[0][1] = std::sin(rad);
     }
 }
 GzMatrix GzMatrix::inverseTranspose() const

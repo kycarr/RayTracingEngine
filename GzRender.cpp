@@ -167,7 +167,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
         {
             lightDir = p_light_arr[i]->position;
             GzRay shadowRay(inter.position, lightDir);
-            if (this->p_scene->intersect(shadowRay).p_geometry)
+            if (this->p_scene->intersect(shadowRay).p_geometry && this->p_scene->intersect(shadowRay).p_geometry->material.f == 0.0f)
             {
                 continue;
             }
@@ -176,7 +176,8 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
         {
             lightDir = (p_light_arr[i]->position - inter.position).normalize();
             GzRay shadowRay(inter.position, lightDir);
-            if (p_scene->intersect(shadowRay).distance <= (p_light_arr[i]->position - inter.position).length())
+            if (this->p_scene->intersect(shadowRay).distance <= (p_light_arr[i]->position - inter.position).length()
+                    && this->p_scene->intersect(shadowRay).p_geometry->material.f == 0.0f)
             {
                 continue;
             }

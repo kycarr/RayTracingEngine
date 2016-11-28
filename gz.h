@@ -8,7 +8,6 @@
 #include "GzException.h"
 #include "GzVector3.h"
 //#include "GzMatrix.h"
-//#include "GzTexCoord.h"
 #include "GzRay.h"
 #include "GzCamera.h"
 #include "GzColor.h"

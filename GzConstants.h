@@ -19,6 +19,15 @@ const double PI(3.1415926535897932);
 const int COORD4_BOUND(4);
 const float EPSILON0(0.005f);
 
+// for GzMatrix translation, and scaling type
+const int TRANSLATION(0);
+const int SCALING(1);
+
+// for matrix rotation
+const int X(0);
+const int Y(1);
+const int Z(2);
+
 //***************************
 // Discarded old codes
 //***************************

@@ -54,12 +54,13 @@ int ApplicationEngine::Initialize()
 
         status = status || GzNewDisplay(m_pDisplay, m_nWidth, m_nHeight);
 
-        GzCamera *p_camera = new GzCamera(GzVector3(0.0f, 10.0f, -10.0f), GzVector3(0.0f, 0.0f, 0.0f), GzVector3(0.0f, 1.0f, 0.0f), 116.0f);
+        GzCamera *p_camera = new GzCamera(GzVector3(0.0f, 10.0f, -10.0f), GzVector3(0.0f, 5.0f, 0.0f), GzVector3(0.0f, 1.0f, 0.0f), 116.0f);
         GzLight **g_lights = new GzLight*[1];
         //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(10.0f, 10.0f, -10), GzColor::GREEN);
         //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(0, 1.0f, 0), GzColor::WHITE);
-        g_lights[0] = new GzLight(POINT_LIGHT, GzVector3(0, 20.0f, 0), GzColor::WHITE);
-        //g_lights[1] = new GzLight(DIR_LIGHT, GzVector3(-10.0f, 10.0f, -10), GzColor::RED);
+        //g_lights[0] = new GzLight(POINT_LIGHT, GzVector3(0, 20.0f, 0), GzColor::WHITE);
+        //g_lights[1] = new GzLight(POINT_LIGHT, GzVector3(-10.0f, 20.0f, 0), GzColor::RED);
+        g_lights[0] = new GzLight(POINT_LIGHT, GzVector3(-10.0f, 20.0f, 0), GzColor::WHITE);
         //GzMaterial mTemp1;
         //GzMaterial mTemp2(GzColor::RED, GzColor::BLACK, GzColor::WHITE, 15, 0);
         // We'll do AA in renderer directly.
@@ -146,11 +147,12 @@ int ApplicationEngine::Render()
 
         //*******************************
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 2.0f);
-        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0.4f);
-        GzGeometry ** p_geos = new GzGeometry*[2];
-        p_geos[0] = new Sphere(GzVector3(0.0f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor(0.5f, 0.5f, 0.5f), 16.0f, 0.8f));
-        p_geos[1] = new Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f), mat);
-        GzGeometry * p_unionGeometry = new Union(2, p_geos);
+        GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func), 15, 0.2f);
+        GzGeometry ** p_geos = new GzGeometry*[3];
+        p_geos[0] = new Sphere(GzVector3(5.2f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor(0.5f, 0.5f, 0.5f), 16.0f, 0.8f));
+        p_geos[1] = new Sphere(GzVector3(-5.2f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor(0.5f, 0.5f, 0.5f), 16.0f, 0.8f));
+        p_geos[2] = new Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f), mat);
+        GzGeometry * p_unionGeometry = new Union(3, p_geos);
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);
         //p_s0->material = mat;
         //GzGeometry scene = constructScene(inFile);

@@ -9,14 +9,6 @@
 #include "GzMatrix.hpp"
 #include <cmath>
 
-GzVector4::GzVector4(float a_a, float a_b, float a_c, float a_d) :
-    a(a_a), b(b_b), c(c_c), d(d_d)
-{
-}
-GzVector4::GzVector4() : GzVector4(0.0f, 0.0f, 0.0f, 0.0f)
-{
-}
-
 GzMatrix::GzMatrix()
 {
     for (int i = 0; i < 4; i++)

@@ -313,8 +313,13 @@ IntersectResult Rec::intersect(const GzRay &ray) const
 	// For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
 
 
-	return IntersectResult(this, distance, interPos, normal, diffDotX, diffDotY);
+	return IntersectResult(this, distance, interPos, normal, diffDotX/xUnit.length(), diffDotY/yUnit.length());
 }
+
+GzGeometry::GzGeometry(const GzMaterial &a_mater) : material(a_mater)
+{
+}
+
 
 
 

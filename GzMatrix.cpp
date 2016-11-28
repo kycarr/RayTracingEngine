@@ -47,7 +47,7 @@ GzMatrix::GzMatrix(float angle, int axis) : GzMatrix()
     if (axis == Y)
     {
         M[0][0] = std::cos(rad);
-        M[3][3] = std::cos(rad);
+        M[2][2] = std::cos(rad);
         M[2][0] = std::sin(rad);
         M[0][2] = -std::sin(rad);
     }

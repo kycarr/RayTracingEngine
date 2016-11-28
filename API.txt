@@ -1,12 +1,29 @@
 // int values used as status indicators
 const int GZ_SUCCESS(0);
 const int GZ_FAILURE(1);
+
+// int values used as light type
+const int DIR_LIGHT(0);
+const int POINT_LIGHT(1);
+const int AREA_LIGHT(2);
+
 // for math calculations
 const double PI(3.1415926535897932);
+
 // for magic numbers
 const int COORD4_BOUND(4);
-// If you need more constants, add them here and in GzConstants.h.
+const float EPSILON0(0.005f);
 
+// for GzMatrix translation, and scaling type
+const int TRANSLATION(0);
+const int SCALING(1);
+
+// for matrix rotation
+const int X(0);
+const int Y(1);
+const int Z(2);
+// If you need more constants, add them here and in GzConstants.h.
+///////////////////////////////////////////////////////////////////////////////////
 class GzException
 {
 // constructors
@@ -36,19 +53,16 @@ GzVector3 operator*(float times, const GzVector3 &v1);
 
 class GzMatrix
 {
-// attributes (private)
-    
-// constructors
+    // attributes 4*4
+    float M[COORD4_BOUND][COORD4_BOUND];
+    // constructors
+public:
     GzMatrix(); // Default constructor. Build an identity matrix in 4-dimensional space.
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
-    GzMatrix(float angle, int axis); // Build a rotation matrix: rotate `angle` degree along an axis, 0 for x axis, 1 for y, 2 for z.
-// methods
-    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Actually only the inverse transpose of the upper left 3*3 part. Ignore translation.
-// operator overloads with friend function
-    friend GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
-    friend GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
-};
-
+    GzMatrix(float angle, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
+    // methods
+    GzMatrix& inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
+}
 class GzTexCoord
 {
 // Not necessary immediately.
@@ -133,21 +147,32 @@ public:
 
 class GzMaterial
 {
-// attributes
+public:
+    // attributes
     GzColor Kd;   // diffuse color
     float s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
     float n; // refractive index
     float r; // reflective part
     float f; // refractive part
     GzTexture texture; // texture component
+    GzTexture normal;
 
-// constructors
+    // constructors
+    GzMaterial(const GzColor &kd, const GzTexture &norm, float a_s, float a_n, float a_r, float a_f);
+    GzMaterial(const GzTexture &tex, const GzTexture &norm, float a_s, float a_n, float a_r, float a_f);
+    GzMaterial(const GzColor &kd, float a_s, float a_n, float a_r, float a_f);
+    GzMaterial(const GzTexture &tex, float a_s, float a_n, float a_r, float a_f);
+    GzMaterial(const GzColor &kd, const GzTexture &norm, float a_r);
+    GzMaterial(const GzTexture &tex, const GzTexture &norm, float a_r);
     GzMaterial(const GzColor &kd, float a_r);
     GzMaterial(const GzTexture &tex, float a_r);
+
     GzMaterial();
-// static member
+
+    // static member
     const static GzMaterial DEFAULT;
 };
+
 
 class IntersectResult
 {
@@ -226,17 +251,50 @@ protected:
     static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray); // For the convenience of Ellipsoid class.
 };
 
-class Ellipsoid: public Sphere
+
+class Rec : public GzGeometry
 {
-// attributes
-    // no new attributes as compared to sphere.
-// constructors
-    Ellipsoid(const GzVector3 &c, const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe);
-    // This constructor has three relative vectors, because it is more natural for the user to specify an ellipsoid in this way. The ellipsoid class does not use them directly as attributes, but convert them to absolute positions to store.
-    Ellipsoid(); // Default constructor. Invoke the default constructor of Sphere.
-// methods
-    virtual IntersectResult intersect(const GzRay &ray) const;
-    // You can call Sphere::getRayDistance function to help when implementing this intersect function
+public:
+	// attributes same as plane but chekcing the boundary of rectangle while getting the intersect result
+	GzVector3 base;
+	GzVector3 bX;
+	GzVector3 bY;
+	// constructors
+	
+	Rec(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
+		   // methods
+
+	Rec::Rec(const GzVector3 &ori, const GzVector3 &x,
+		const GzVector3 &y, const GzMaterial &a_mat = GzMaterial::DEFAULT);
+
+
+	virtual IntersectResult intersect(const GzRay &ray) const;
+	virtual float getIntersectDistance(const GzRay &ray) const;
+};
+
+
+class Ellipsoid : public GzGeometry
+{
+public:
+	// attributes we don't need radius (r) for ellipsoid this time, x,y,z should be parallel to world axis X,Y,Z only scaling matters 
+	GzVector3 center;
+	GzVector3 arctic; // Arctic point, theta = 0, phi = any
+	GzVector3 long_x; // Point for longitute calculation, theta = 90, phi = 0
+	GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
+					  // constructors
+	Ellipsoid(const GzVector3 &c= GzVector3(0.0f, 0.0f, 0.0f),
+		const GzMaterial &a_mat = GzMaterial::DEFAULT,
+		const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
+		const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
+		const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
+
+	
+	// methods
+	virtual IntersectResult intersect(const GzRay &ray) const;
+	virtual float getIntersectDistance(const GzRay &ray) const;
+	//protected:
+	// static methods
+	//static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
 };
 
 class Union: public GzGeometry
@@ -322,62 +380,5 @@ public:
     GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
 };
 
-class Rec : public GzGeometry
-{
-public:
-	// attributes same as plane but chekcing the boundary of rectangle while getting the intersect result
-	GzVector3 base;
-	GzVector3 bX;
-	GzVector3 bY;
-	// constructors
-	
-	Rec(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
-		   // methods
 
-	Rec::Rec(const GzVector3 &ori, const GzVector3 &x,
-		const GzVector3 &y, const GzMaterial &a_mat = GzMaterial::DEFAULT);
-
-
-	virtual IntersectResult intersect(const GzRay &ray) const;
-	virtual float getIntersectDistance(const GzRay &ray) const;
-};
-
-
-class Ellipsoid : public GzGeometry
-{
-public:
-	// attributes we don't need radius (r) for ellipsoid this time, x,y,z should be parallel to world axis X,Y,Z only scaling matters 
-	GzVector3 center;
-	GzVector3 arctic; // Arctic point, theta = 0, phi = any
-	GzVector3 long_x; // Point for longitute calculation, theta = 90, phi = 0
-	GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
-					  // constructors
-	Ellipsoid(const GzVector3 &c= GzVector3(0.0f, 0.0f, 0.0f),
-		const GzMaterial &a_mat = GzMaterial::DEFAULT,
-		const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
-		const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
-		const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
-
-	
-	// methods
-	virtual IntersectResult intersect(const GzRay &ray) const;
-	virtual float getIntersectDistance(const GzRay &ray) const;
-	//protected:
-	// static methods
-	//static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
-};
-
-// not used now
-class GzMatrix
-{
-    // attributes 4*4 matrix 
-    float M[COORD4_BOUND][COORD4_BOUND];
-    // constructors
-public:
-    GzMatrix(); // Default constructor. Build an identity matrix in 4-dimensional space.
-    GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
-    GzMatrix(float angle, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
-    // methods
-    GzMatrix& inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
-}
 

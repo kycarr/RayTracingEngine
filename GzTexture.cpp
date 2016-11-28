@@ -2,18 +2,18 @@
 #include "GzTexture.h"
 
 // Constructor makes a new texture with the given texture function and file
-GzTexture::GzTexture(const char* &_texfile, GzColor(GzTexture::*func)(float, float)) :
-    tex_file(_texfile), tex_fun(func)
+GzTexture::GzTexture(const char* &_texfile, GzColor(GzTexture::*func)(float, float), int scale) :
+    tex_file(_texfile), tex_fun(func), tex_scale(scale)
 {
     loadFile(_texfile);
 }
 
-GzTexture::GzTexture(GzColor(GzTexture::*func)(float, float)) : 
-    tex_file(NULL), tex_fun(func)
+GzTexture::GzTexture(GzColor(GzTexture::*func)(float, float), int scale) : 
+    tex_file(NULL), tex_fun(func), tex_scale(scale)
 {
 }
 
-GzTexture::GzTexture() : tex_file(NULL), tex_fun(NULL)
+GzTexture::GzTexture() : tex_file(NULL), tex_fun(NULL), tex_scale(1)
 {
 }
 
@@ -96,14 +96,12 @@ GzColor GzTexture::image_tex_func(float u, float v)
 /* Checkerboard procedural texture function */
 GzColor GzTexture::checker_ptex_func(float u, float v)
 {
-    int scale = 1;
-    //u = max(0, u);
-    //u = min(u, 1);
-    //v = max(0, v);
-    //v = min(v, 1);
+    float x_size = tex_scale == 0 ? 0 : 1.0f / tex_scale;
+    float y_size = tex_scale == 0 ? 0 : 1.0f / tex_scale;
 
-    int x = floor(u * scale);
-    int y = floor(v * scale);
+    // tex_scale = the # of rows/cols of checkers
+    int x = floor((u * tex_scale) / x_size);
+    int y = floor((v * tex_scale) / y_size);
 
     if ((x + y) % 2 == 0)
         return GzColor::BLACK;

@@ -15,9 +15,12 @@ public:
     float r;      // reflective part
     //float f;      // refractive part
     GzTexture texture;
+    GzTexture normal;
 
     // constructors
     GzMaterial(const GzColor &kd, float a_s,  float a_r);
+    GzMaterial(const GzColor &kd, const GzTexture &norm, float a_s, float a_r);
+    GzMaterial(const GzTexture &tex, const GzTexture &norm, float a_s, float a_r);
     GzMaterial(const GzTexture &tex, float a_s, float a_r);
     GzMaterial();
 

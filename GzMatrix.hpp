@@ -10,18 +10,6 @@
 #define GzMatrix_hpp
 
 #include "gz.h"
-class GzVector4
-{
-public:
-    float a, b, c, d;
-    
-    GzVector4(float a_a, float a_b, float a_c, float a_d);
-    
-    GzVector4();
-    
-    
-};
-
 class GzMatrix
 {
     // attributes

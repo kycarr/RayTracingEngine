@@ -1,18 +1,34 @@
+// int values used as status indicators
+const int GZ_SUCCESS(0);
+const int GZ_FAILURE(1);
+// for math calculations
+const double PI(3.1415926535897932);
+// for magic numbers
+const int COORD4_BOUND(4);
+// If you need more constants, add them here and in GzConstants.h.
+
+class GzException
+{
+// constructors
+    GzException();
+};
+
 class GzVector3
 {
 // attributes
     float x, y, z;
 // constructors
-    GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
     GzVector3(float a_x, float a_y, float a_z);
+    GzVector3(); // Default constructor. Build a zero vector in 3-dimensional space.
 // methods
+    float lengthSqr() const;
     float length() const;
-    GzVector3 normalize() const; // Return the normalized vector, without changing this object. If this vector is zero, return a zero vector.
+    GzVector3 normalize() const; // Return the normalized vector, without changing `this` object. If `this` vector is zero, throw an exception.
     GzVector3 flip() const; // Return the negative of this vector.
     float dotMultiply(const GzVector3 &dot) const;
     GzVector3 crossMultiply(const GzVector3 &cross) const;
 };
-// operator overloads
+// operator overloads with normal function
 GzVector3 operator+(const GzVector3 &add1, const GzVector3 &add2);
 GzVector3 operator-(const GzVector3 &minus1, const GzVector3 &minus2);
 GzVector3 operator*(const GzVector3 &v1, float times);
@@ -20,26 +36,57 @@ GzVector3 operator*(float times, const GzVector3 &v1);
 
 class GzMatrix
 {
+// attributes (private)
+    
 // constructors
     GzMatrix(); // Default constructor. Build an identity matrix in 4-dimensional space.
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.
-    GzMatrix(float arc, int axis); // Build a rotation matrix: rotate arc degree along an axis, 0 for x axis, 1 for y, 2 for z.
+    GzMatrix(float angle, int axis); // Build a rotation matrix: rotate `angle` degree along an axis, 0 for x axis, 1 for y, 2 for z.
 // methods
-    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Not necessary immediately.
+    GzMatrix inverseTranspose() const; // Get the inverse transpose matrix for normal transformation. Actually only the inverse transpose of the upper left 3*3 part. Ignore translation.
+// operator overloads with friend function
+    friend GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
+    friend GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
 };
-// operator overloads
-GzVector3 operator*(const GzMatrix &m, const GzVector3 &v);
-GzMatrix operator*(const GzMatrix &m1, const GzMatrix &m2);
+
+class GzTexCoord
+{
+// Not necessary immediately.
+};
+
+class GzRay
+{
+// attributes
+    GzVector3 origin, direction;
+// constructors
+    GzRay(const GzVector3 &p, const GzVector3 &d);
+    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
+// methods
+    GzVector3 getPoint(float distance) const;
+};
+
+class GzCamera
+{
+// attributes
+    GzVector3 position, face, up, right;
+    float fovScale;
+// constructors
+    GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
+    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, 1), with FOV as 90 degree.
+// methods
+    GzRay generateRay(float ndcx, float ndcy) const;
+};
 
 class GzColor
 {
 // attributes
     float r, g, b;
 // constructors
-    GzColor(); // Default constructor. Build a black GzColor object.
     GzColor(float a_r, float a_g, float a_b);
+    GzColor(); // Default constructor. Build a black GzColor object.
 // methods
     GzColor modulate(const GzColor &other) const;
+    GzColor exposure() const; // Photo exposure. Modifies overflowed color to a reasonable value. Have smaller effect on lower values.
 // static members
     const static GzColor BLACK;
     const static GzColor WHITE;
@@ -50,79 +97,228 @@ class GzColor
     const static GzColor MAGENTA;
     const static GzColor YELLOW;
 };
-// operator overloads
+// operator overloads with normal function
 GzColor operator+(const GzColor &c1, const GzColor &c2);
 GzColor operator*(const GzColor &c1, float s);
-
-class GzRay
-{
-// attributes
-    GzVector3 origin, direction;
-// constructors
-    GzRay(); // Default constructor. Build a ray starting from (0,0,0), going to (0, 0, -1)
-    GzRay(const GzVector3 &p, const GzVector3 &d);
-// methods
-    GzVector3 getPoint(float distance) const;
-};
-
-class GzGeometry
-{
-    // base class, will be inherited by other geometry classes
-    //methods: virtual IntersectResult intersect(GzRay);
-    // not decided
-};
-
-class IntersectResult
-{
-// attributes
-    GzGeometry geometry; // Should be a reference to the geometry at the point of intersecting.
-    float distance;
-    GzVector3 position, normal;
-// constructors
-    IntersectResult(); // Default constructor. Build an object that do not intersect.
-    IntersectResult(const GzGeometry &obj, float d, const GzVector3 &p, const GzVector3 &n);
-// methods
-    shade(GzLight[]); // not decided
-// static members
-    const static IntersectResult NOHIT;
-};
-
-class GzCamera
-{
-// attributes
-    GzVector3 position, face, up, right;
-    float fovScale;
-// constructors
-    GzCamera(); // Default constructor. Build a camera at (0,0,0) and looking at (0, 0, -1), with FOV as 90 degree.
-    GzCamera(const GzVector3 &p, const GzVector3 &lookat, const GzVector3 &worldup, float fov);
-// methods
-    GzRay generateRay(float ndcx, float ndcy) const;
-};
-
-class GzLight
-{
-    attributes: GzVector position;
-                int type; // 0 for directional, 1 for point light
-};
+GzColor operator*(float s, const GzColor &c1);
 
 class GzPixel
 {
 // attributes
     unsigned short red, green, blue, alpha;
 // constructors
-    GzPixel(); // Default constructor. Build a black pixel.
-    GzPixel(unsigned int a_r, a_g, a_b, a_a = 4095);
+    GzPixel(unsigned int a_r, unsigned int a_g, unsigned int a_b, unsigned int a_a = 4095u);
     GzPixel(const GzColor &pixelColor);
-// static method
+    GzPixel(); // Default constructor. Build a black pixel.
+// methods
+    void putColor(const GzColor &pixelColor);
+// static methods
     static unsigned short ctoi(float color);
+};
+
+class GzAASetting
+{
+// attributes
+    int kernelSize;
+    GzVector3 *ker;
+// constructors
+    GzAASetting(int k_size, GzVector3 * k_array); // for user-defined filter
+    GzAASetting(int k_size_sqrt); // for regular grid filter
+private:
+    GzAASetting(); // Default constructor. Disabled by using private.
+// destructor
+public:
+    ~GzAASetting();
+};
+
+class GzMaterial
+{
+// attributes
+    GzColor Kd;   // diffuse color
+    float   s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
+    // add texture component later
+    // add refractive index later
+    float r; // reflective part
+    //float f; // refractive part
+	GzTexture texture;
+
+// constructors
+    GzMaterial(const GzColor &kd, float a_s,  float a_r);
+    GzMaterial(const GzTexture &tex, float a_s, float a_r);
+    GzMaterial();
+// static member
+    const static GzMaterial DEFAULT;
+};
+
+class IntersectResult
+{
+// attributes
+    const GzGeometry *const p_geometry;
+    const float distance;
+    const GzVector3 position;
+    const GzVector3 normal; // For refractive feature calculation, perhaps the normal vector should always point outward.
+    const float u, v;
+// constructors
+    // Pre: a_nor is a normalized vector. No checking inside.
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor, float a_u, float a_v);
+    IntersectResult(const GzGeometry *a_geo, float a_dis, const GzVector3 &a_pos, const GzVector3 &a_nor);
+    IntersectResult(); // Default constructor. Build a NOHIT object.
+// static members
+    const static IntersectResult NOHIT;
+};
+
+class GzGeometry // Base class
+{
+// attributes
+    GzMaterial material;
+// constructors
+    GzGeometry(const GzMaterial &a_mater);
+    GzGeometry(); // Default constructor. Builds with default material.
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const = 0; // This method calculates the intersection of a ray and the geometry. Returns all the information needed for shading, including distance (from ray origin to the intersection point), position of intersection, normal vector of the intersection point, texture coordinates.
+    //virtual void transform(const GzMatrix &mat) = 0; // This method modifies the geometry according to a general transformation matrix.
+// additional description of GzGeometry class
+// You must implement any derived class of GzGeometry as:
+// Only store positions and normals of the object as attributes for your description of the geometry.
+// You can't have a `float radius` for a sphere. You can't have a position relative to a vertex for a rectangle, like `GzVector3 upperLeftCorner; GzVector3 side1; GzVector3 side2;`.
+// You must do things like `GzVector3 upperLeft; GzVector3 upperRight;` with absolute position vectors.
+// Normal vectors are OK.
+// The reason is, we want `transform` function to work for a general transformation matrix. If you don't know the type of the transformation ahead of time, you are not able to transform those primitive values, relative vectors or some other attributes accordingly.
+// You must transform the whole geometry correctly only with a general matrix. The only way to achieve this is to have absolute position vectors as attributes and transform all of them with the input matrix.
+// Also, you need to consider how to bind texture coordinates to the object.
+// For example, a perfect symmetric sphere is not able to have different texture coordinates for every point on the surface. For the purpose of texture, you need a texture coordinate system for your particular geometry object.
+// Even for an infinite plane, every point on the plane need a texture coordinate. And you need to find out how.
+};
+
+class Plane: public GzGeometry
+{
+// attributes
+    GzVector3 base;
+    GzVector3 bX;
+    GzVector3 bY;
+// constructors
+    Plane(const GzVector3 &n, float dToOrigin, const GzVector3 &u_axe,
+            const GzMaterial &a_mat = GzMaterial::DEFAULT);
+    Plane(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+};
+
+class Sphere: public GzGeometry
+{
+// attributes
+    GzVector3 center;
+    GzVector3 arctic; // Arctic point, theta = 0, phi = any
+    GzVector3 long_x; // Point for longitute calculation, theta = 90, phi = 0
+    GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
+    // These attributes is for utilizing the spherical coordinate system.
+// constructors
+    Sphere(const GzVector3 &c, float radius,
+            const GzMaterial &a_mat = GzMaterial::DEFAULT,
+            const GzVector3 &x_axe = GzVector3(0.0f, 0.0f, 1.0f),
+            const GzVector3 &y_axe = GzVector3(1.0f, 0.0f, 0.0f),
+            const GzVector3 &z_axe = GzVector3(0.0f, 1.0f, 0.0f));
+    // This constructor has three relative vectors, because it is more natural for the user to specify a sphere in this way. The sphere class does not use them directly as attributes, but convert them to absolute positions to store.
+    Sphere(); // Default constructor. Build a unit sphere in the world space.
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+protected:
+// static methods
+    static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray); // For the convenience of Ellipsoid class.
+};
+
+class Ellipsoid: public Sphere
+{
+// attributes
+    // no new attributes as compared to sphere.
+// constructors
+    Ellipsoid(const GzVector3 &c, const GzVector3 &x_axe, const GzVector3 &y_axe, const GzVector3 &z_axe);
+    // This constructor has three relative vectors, because it is more natural for the user to specify an ellipsoid in this way. The ellipsoid class does not use them directly as attributes, but convert them to absolute positions to store.
+    Ellipsoid(); // Default constructor. Invoke the default constructor of Sphere.
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+    // You can call Sphere::getRayDistance function to help when implementing this intersect function
+};
+
+class Union: public GzGeometry
+{
+// attributes
+    int num;
+    GzGeometry ** gArray;
+// constructors
+    Union(int g_num, GzGeometry ** g_p_arr);
+    Union();
+// destructor
+    ~Union();
+// methods
+    virtual IntersectResult intersect(const GzRay &ray) const;
+};
+
+class GzLight
+{
+// attributes
+    int type;           // 0 for directional, 1 for point, 2 for area (do it later)
+    GzVector3 position; // position if point light, direction if directional light
+    GzColor color;      // the color of the light
+// constructors
+    GzLight(int t, const GzVector3 &pos, const GzColor &col = GzColor::WHITE);
+    // Just use a default parameter will do the job.
+    //GzLight(int t, GzVector3 pos); // Build a white light.
+    GzLight(); // Default constructur; Build a directional light from the direction of (0, 1, 0).
+// need extension for area light later.
+    //GzRectangle * rect;
+// methods
+    getLightDir(const GzVector3 &pos);
 };
 
 class GzDisplay
 {
 // attributes
     short xres, yres;
+	GzColor bgColor;
 // constructors
-    GzDisplay(); // Default constructor. Build a display with max resolutions.
     GzDisplay(int a_xRes, a_yRes);
+    GzDisplay(); // Default constructor. Build a display with max resolutions.
+// destructor
     ~GzDisplay();
+// methods
+    int index(int i, int j) const;
+    int init(const GzColor &back);
+    void putDisplay(int i, int j, const GzPixel &p);
+    void putDisplay(int i, int j, const GzColor &c);
+    int getDisplay(int i, int j, GzPixel &get) const;
+    int flush2File(FILE* outfile) const;
+    int flush2FrameBuffer(char* framebuffer) const;
+// static members
+    const static short MAXXRES;
+    const static short MAXYRES;
+};
+
+class GzRender
+{
+// attributes (private, lots of)
+private:
+    GzDisplay *p_display;
+    GzCamera *p_camera;
+    GzLight **p_light_arr; // Array of pointers
+    int n_lights;
+    GzGeometry *p_scene; // Union geometry object or one object. Not an array
+    GzAASetting *p_AA; // By default there will be one AA setting. Can be re-written.
+    // These pointers above must be dynamically allocated.
+    int options;
+// constructors
+private:
+    GzRender(); // Default constructor. Disabled by using private.
+public:
+    GzRender(const GzDisplay *p_disp);
+// destructor
+    ~GzRender();
+// methods
+    int putCamera(GzCamera *p_cam);
+    int putLights(GzLight **p_li_arr);
+    int putScene(GzGeometry *p_sce);
+    int putAASetting(GzAASetting *p_aa);
+    int putAttribute(int attribute);
+    int renderToDisplay();
+    GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
 };

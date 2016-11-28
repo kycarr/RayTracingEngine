@@ -180,11 +180,22 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationEngine.h" />
-    <ClInclude Include="disp.h" />
     <ClInclude Include="gz.h" />
+    <ClInclude Include="GzAASetting.h" />
+    <ClInclude Include="GzCamera.h" />
     <ClInclude Include="GzColor.h" />
+    <ClInclude Include="GzConstants.h" />
+    <ClInclude Include="GzDisplay.h" />
+    <ClInclude Include="GzException.h" />
+    <ClInclude Include="GzGeometry.h" />
+    <ClInclude Include="GzLight.h" />
+    <ClInclude Include="GzPixel.h" />
+    <ClInclude Include="GzRay.h" />
+    <ClInclude Include="GzRender.h" />
+    <ClInclude Include="GzTexture.h" />
     <ClInclude Include="GzVector3.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="GzMaterial.h" />
     <ClInclude Include="RayTracingEngine.h" />
     <ClInclude Include="RayTracingEngineDoc.h" />
     <ClInclude Include="RayTracingEngineView.h" />
@@ -195,8 +206,18 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationEngine.cpp" />
-    <ClCompile Include="disp.cpp" />
+    <ClCompile Include="GzAASetting.cpp" />
+    <ClCompile Include="GzCamera.cpp" />
     <ClCompile Include="GzColor.cpp" />
+    <ClCompile Include="GzDisplay.cpp" />
+    <ClCompile Include="GzException.cpp" />
+    <ClCompile Include="GzGeometry.cpp" />
+    <ClCompile Include="GzLight.cpp" />
+    <ClCompile Include="GzMaterial.cpp" />
+    <ClCompile Include="GzPixel.cpp" />
+    <ClCompile Include="GzRay.cpp" />
+    <ClCompile Include="GzRender.cpp" />
+    <ClCompile Include="GzTexture.cpp" />
     <ClCompile Include="GzVector3.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="RayTracingEngine.cpp" />
@@ -219,6 +240,9 @@
     <Image Include="res\RayTracingEngine.ico" />
     <Image Include="res\RayTracingEngineDoc.ico" />
     <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="API.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

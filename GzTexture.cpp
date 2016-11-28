@@ -110,3 +110,20 @@ GzColor GzTexture::checker_ptex_func(float u, float v)
     else
         return GzColor::WHITE;
 }
+
+GzColor GzTexture::checker_ptex_func2(float u, float v)
+{
+	int scale =1;
+	//u = max(0, u);
+	//u = min(u, 1);
+	//v = max(0, v);
+	//v = min(v, 1);
+
+	int x = floor(u * scale);
+	int y = floor(v * scale);
+
+	if ((x + y) % 2 == 0)
+		return GzColor::RED;
+	else
+		return GzColor::YELLOW;
+}

@@ -116,10 +116,49 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
     //GzColor specularPart = inter.p_geometry->material.reflectiveness * specularLight(inter, *p_li_arr);
     GzColor reflectPart(0.0f, 0.0f, 0.0f);
     GzColor diffusePart(0.0f, 0.0f, 0.0f);
+    GzColor refractPart(0.0f, 0.0f, 0.0f);
     GzVector3 incDir = incRay.direction.flip();
-    float nDotRay = incDir.dotMultiply(inter.normal);
-    GzVector3 reflectDir = 2.0f * nDotRay * inter.normal - incDir;
+    GzVector3 flipN = inter.normal;
+    float nDotRay = incDir.dotMultiply(flipN); // This is cos(i) or -cos(i)
+    float nRelative = inter.p_geometry->material.n;
+    bool backSide(nDotRay < 0.0f);
+    if (backSide)
+    {
+        flipN = inter.normal.flip();
+        nDotRay = -nDotRay;
+        nRelative = 1.0f / nRelative;
+    }
+    // Now flipN is the normal vector at incident ray side
+    // incDir is eye vector
+    // nRelative is the ratio of n_this_side/n_that_side
+    bool hasRefra(inter.p_geometry->material.f > 0.0f);
+    if (hasRefra)
+    {
+        GzVector3 refractDir = incRay.direction;
+        if (nDotRay != 0.0f && nDotRay != 1.0f)
+        {
+            GzVector3 tangentDir = (incDir - nDotRay * flipN).normalize();
+            float sin_i = std::sqrt(1.0f - nDotRay * nDotRay);
+            float sin_r = sin_i / nRelative;
+            if (sin_r < 1.0f)
+            {
+                float cos_r = std::sqrt(1.0f - sin_r * sin_r);
+                refractDir = (flipN.flip() * cos_r + tangentDir.flip() * sin_r).normalize();
+                GzRay refractRay(inter.position, refractDir);
+                GzColor refractLight = this->shade((this->p_scene->intersect(refractRay)), refractRay, inter.p_geometry->material.f * bar);
+                refractPart = refractPart + refractLight;
+            }
+            else
+            {
+                hasRefra = false;
+            }
+        }
+    }
+    // End of refraction part. Only need to deal with mixing later.
+    GzVector3 reflectDir = 2.0f * nDotRay * flipN - incDir;
     GzRay reflectRay(inter.position, reflectDir);
+    GzColor reflectLight = this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
+    reflectPart = reflectPart + reflectLight;
     GzTexture tex = inter.p_geometry->material.texture;
     for (int i = 0; i < this->n_lights; ++i)
     {
@@ -143,16 +182,17 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
             }
         }
         // Common part for dir light and point light
+        // flipN
         float nDotL = lightDir.dotMultiply(inter.normal);
         
         if (nDotL * nDotRay > 0.0f)
         {
             //GzVector3 flipN = inter.normal;
-            if (nDotL < 0.0f)
-            {
+            //if (nDotL < 0.0f)
+            //{
                 //flipN = inter.normal.flip();
-                nDotL = -nDotL;
-            }
+                //nDotL = -nDotL;
+            //}
             //GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
             float lDotR = (lightDir.dotMultiply(reflectDir) < 0.0f ? 0.0f : lightDir.dotMultiply(reflectDir));
             reflectPart = reflectPart + p_light_arr[i]->color * std::pow(lDotR, inter.p_geometry->material.s);
@@ -167,23 +207,21 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
             }
         }
     }
-    //TODO
-    GzColor reflectLight = this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
-    reflectPart = reflectPart + reflectLight;
-    if (tex.hasTexture())
-    {
-        diffusePart = diffusePart + reflectLight.modulate(tex.tex_map(inter.u, inter.v)) * inter.normal.dotMultiply(reflectDir);
-    }
-    else
-    {
-        diffusePart = diffusePart + reflectLight.modulate(inter.p_geometry->material.Kd) * inter.normal.dotMultiply(reflectDir);
-    }
+    //TODO This correspond with radiosity/diffuse interreflection
+    //if (tex.hasTexture())
+    //{
+        //diffusePart = diffusePart + reflectLight.modulate(tex.tex_map(inter.u, inter.v)) * inter.normal.dotMultiply(reflectDir);
+    //}
+    //else
+    //{
+        //diffusePart = diffusePart + reflectLight.modulate(inter.p_geometry->material.Kd) * inter.normal.dotMultiply(reflectDir);
+    //}
     reflectPart = reflectPart.exposure();
     diffusePart = diffusePart.exposure();
-    return inter.p_geometry->material.r * reflectPart + (1.0f - inter.p_geometry->material.r) * diffusePart;
+    if (hasRefra)
+    {
+        return inter.p_geometry->material.r * reflectPart + inter.p_geometry->material.f * refractPart + (1.0f - inter.p_geometry->material.r - inter.p_geometry->material.f) * diffusePart;
+    }
+    return (inter.p_geometry->material.r + inter.p_geometry->material.f) * reflectPart + (1.0f - inter.p_geometry->material.r - inter.p_geometry->material.f) * diffusePart;
 }
 
-//GzColor GzRender::specularLight(const IntersectResult &inter, const GzLight *p_li_arr)
-//{
-    
-//}

@@ -54,6 +54,9 @@ public:
 	virtual float getIntersectDistance(const GzRay &ray) const;
 };
 
+
+
+
 class Sphere: public GzGeometry
 {
 public:
@@ -95,6 +98,27 @@ public:
     ~Union();
 // methods
     virtual IntersectResult intersect(const GzRay &ray) const;
+	virtual float getIntersectDistance(const GzRay &ray) const;
+};
+
+
+class Rec : public GzGeometry
+{
+public:
+	// attributes
+	GzVector3 base;
+	GzVector3 bX;
+	GzVector3 bY;
+	// constructors
+	
+	Rec(); // Default constructor. Build a plane at (0,0,0) normal as (0, 1, 0).
+		   // methods
+
+	Rec::Rec(const GzVector3 &ori, const GzVector3 &x,
+		const GzVector3 &y, const GzMaterial &a_mat = GzMaterial::DEFAULT);
+
+
+	virtual IntersectResult intersect(const GzRay &ray) const;
 	virtual float getIntersectDistance(const GzRay &ray) const;
 };
 

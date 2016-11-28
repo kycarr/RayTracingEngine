@@ -104,18 +104,23 @@ int GzRender::renderToDisplay()
 
 GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float bar)
 {
-    if (bar < EPSILON0)
+    if (bar < EPSILON0 || inter.p_geometry == nullptr)
     {
         return GzColor::BLACK;
     }
+    //if (inter.p_geometry == nullptr)
+    //{
+        //return this->p_display->bgColor;
+    //}
     //GzColor computedColor(0.0f, 0.0f, 0.0f);
     //GzColor specularPart = inter.p_geometry->material.reflectiveness * specularLight(inter, *p_li_arr);
     GzColor reflectPart(0.0f, 0.0f, 0.0f);
     GzColor diffusePart(0.0f, 0.0f, 0.0f);
     GzVector3 incDir = incRay.direction.flip();
     float nDotRay = incDir.dotMultiply(inter.normal);
-    GzVector3 reflectDir = 2 * nDotRay * inter.normal - incDir;
+    GzVector3 reflectDir = 2.0f * nDotRay * inter.normal - incDir;
     GzRay reflectRay(inter.position, reflectDir);
+    GzTexture tex = inter.p_geometry->material.texture;
     for (int i = 0; i < this->n_lights; ++i)
     {
         GzVector3 lightDir;
@@ -152,7 +157,6 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
             float lDotR = (lightDir.dotMultiply(reflectDir) < 0.0f ? 0.0f : lightDir.dotMultiply(reflectDir));
             reflectPart = reflectPart + p_light_arr[i]->color * std::pow(lDotR, inter.p_geometry->material.s);
 
-            GzTexture tex = inter.p_geometry->material.texture;
             if (tex.hasTexture())
             {
                 diffusePart = diffusePart + p_light_arr[i]->color.modulate(tex.tex_map(inter.u, inter.v)) * nDotL;
@@ -164,7 +168,16 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
         }
     }
     //TODO
-    //reflectPart = reflectPart + this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
+    GzColor reflectLight = this->shade((this->p_scene->intersect(reflectRay)), reflectRay, inter.p_geometry->material.r * bar);
+    reflectPart = reflectPart + reflectLight;
+    if (tex.hasTexture())
+    {
+        diffusePart = diffusePart + reflectLight.modulate(tex.tex_map(inter.u, inter.v)) * inter.normal.dotMultiply(reflectDir);
+    }
+    else
+    {
+        diffusePart = diffusePart + reflectLight.modulate(inter.p_geometry->material.Kd) * inter.normal.dotMultiply(reflectDir);
+    }
     reflectPart = reflectPart.exposure();
     diffusePart = diffusePart.exposure();
     return inter.p_geometry->material.r * reflectPart + (1.0f - inter.p_geometry->material.r) * diffusePart;

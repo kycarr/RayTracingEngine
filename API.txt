@@ -53,9 +53,7 @@ GzVector3 operator*(float times, const GzVector3 &v1);
 
 class GzMatrix
 {
-    // attributes 4*4
-    float M[COORD4_BOUND][COORD4_BOUND];
-    // constructors
+   
 public:
     GzMatrix(); // Default constructor. Build an identity matrix in 4-dimensional space.
     GzMatrix(const GzVector3 &v, int type); // Type specifies type of matrix: 0 for translation, 1 for scaling.

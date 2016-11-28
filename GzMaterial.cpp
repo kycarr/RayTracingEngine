@@ -34,12 +34,12 @@ GzMaterial::GzMaterial(const GzTexture &tex, const GzTexture &norm, float a_r) :
 
 
 GzMaterial::GzMaterial(const GzColor &kd, float a_r) :
-    Kd(kd), s(16.0f), n(1.0f), r(a_r), f(0.0f), texture(GzTexture()), normal(norm)
+    Kd(kd), s(16.0f), n(1.0f), r(a_r), f(0.0f), texture(GzTexture()), normal(GzTexture())
 {
 }
 
 GzMaterial::GzMaterial(const GzTexture &tex, float a_r) :
-    Kd(GzColor::WHITE), s(16.0f), n(1.0f), r(a_r), f(0.0f), texture(tex), normal(norm)
+    Kd(GzColor::WHITE), s(16.0f), n(1.0f), r(a_r), f(0.0f), texture(tex), normal(GzTexture())
 {
 }
 

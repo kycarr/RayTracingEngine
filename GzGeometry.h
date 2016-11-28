@@ -80,6 +80,31 @@ public:
     //static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
 };
 
+class Ellipsoid : public GzGeometry
+{
+public:
+	// attributes
+	GzVector3 center;
+	GzVector3 arctic; // Arctic point, theta = 0, phi = any
+	GzVector3 long_x; // Point for longitute calculation, theta = 90, phi = 0
+	GzVector3 long_y; // Point for longitute calculation, theta = 90, phi = 90
+					  // constructors
+	Ellipsoid(const GzVector3 &c= GzVector3(0.0f, 0.0f, 0.0f),
+		const GzMaterial &a_mat = GzMaterial::DEFAULT,
+		const GzVector3 &x_axe = GzVector3(1.0f, 0.0f, 0.0f),
+		const GzVector3 &y_axe = GzVector3(0.0f, 1.0f, 0.0f),
+		const GzVector3 &z_axe = GzVector3(0.0f, 0.0f, 1.0f));
+
+	
+	// methods
+	virtual IntersectResult intersect(const GzRay &ray) const;
+	virtual float getIntersectDistance(const GzRay &ray) const;
+	//protected:
+	// static methods
+	//static float getRayDistance(const GzVector3 &c, float r, const GzRay &ray);
+};
+
+
 //class Ellipsoid: public Sphere
 //{
 //};

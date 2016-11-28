@@ -11,7 +11,6 @@ class GzMaterial
 public:
     // attributes
     GzColor Kd;   // diffuse color
-<<<<<<< HEAD
     float s;   //(R*E)^s, or (N*H)^s in Blinn-Phong lighting
     float n; // refractive index
     float r; // reflective part

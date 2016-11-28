@@ -98,6 +98,7 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
+        GzVector3 normal = (interPos - this->center).normalize();
         GzVector3 relative(interPos - center);
         GzVector3 n(relative.normalize());
         float theta = std::acos(n.dotMultiply((this->arctic - this->center).normalize()));
@@ -110,7 +111,8 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
             float phi = std::atan2(sinPhiL, cosPhiL);
             u = static_cast<float>(phi / (2*PI) + 0.5);
         }
-        return IntersectResult(this, distance, interPos, (interPos - this->center).normalize(), u, v);
+
+        return IntersectResult(this, distance, interPos, normal, u, v);
         //float o2c((this->center - ray.origin).length());
         //if (o2c < radius)
         //{

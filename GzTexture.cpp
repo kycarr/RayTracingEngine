@@ -96,23 +96,12 @@ GzColor GzTexture::image_tex_func(float u, float v)
 /* Checkerboard procedural texture function */
 GzColor GzTexture::checker_ptex_func(float u, float v)
 {
-    int x, y;
     float x_size = tex_scale == 0 ? 0 : 1.0f / tex_scale;
     float y_size = tex_scale == 0 ? 0 : 1.0f / tex_scale;
 
-    // infinite plane
-    if (u > 1 || v > 1 || u < 0 || v < 0) {
-        // tex_scale scales down the # of checkers
-        x = floor(u * x_size);
-        y = floor(v * y_size);
-    }
-    // regular geometry
-    else {
-        // tex_scale = the # of rows/cols of checkers
-        x = floor((u * tex_scale) / x_size);
-        y = floor((v * tex_scale) / y_size);
-    }
-
+    // tex_scale = the # of rows/cols of checkers
+    int x = floor((u * tex_scale) / x_size);
+    int y = floor((v * tex_scale) / y_size);
 
     if ((x + y) % 2 == 0)
         return GzColor::BLACK;

@@ -316,9 +316,6 @@ IntersectResult Rec::intersect(const GzRay &ray) const
 	return IntersectResult(this, distance, interPos, normal, diffDotX/xUnit.length(), diffDotY/yUnit.length());
 }
 
-GzGeometry::GzGeometry(const GzMaterial &a_mater) : material(a_mater)
-{
-}
 
 
 

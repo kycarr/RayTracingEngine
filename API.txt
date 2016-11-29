@@ -319,5 +319,4 @@ public:
     int putAASetting(GzAASetting *p_aa);
     int putAttribute(int attribute);
     int renderToDisplay();
-    GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
 };

@@ -32,7 +32,9 @@ public:
 
     int renderToDisplay();
 
+private:
     GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
+    float getLightCoeff(const GzVector3 &interPos, const GzLight *p_light);
 };
 
 #endif

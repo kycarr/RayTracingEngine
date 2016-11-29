@@ -6,7 +6,7 @@
 GzLight::GzLight(int t, const GzVector3 &pos, const GzColor &col) :
     type(t), position(pos), color(col)
 {
-    if (type == 0)
+    if (type == DIR_LIGHT)
     {
         position = pos.normalize();
     }
@@ -17,6 +17,19 @@ GzLight::GzLight(int t, const GzVector3 &pos, const GzColor &col) :
 //{
 //}
 
-GzLight::GzLight() : GzLight(0, GzVector3(0.0f, 1.0f, 0.0f))
+GzLight::GzLight() : GzLight(DIR_LIGHT, GzVector3(0.0f, 1.0f, 0.0f))
 {
 }
+
+GzVector3 GzLight::getLightDir(const GzVector3 &interPos) const
+{
+    if (this->type == DIR_LIGHT)
+    {
+        return this->position;
+    }
+    else
+    {
+        return (this->position - interPos).normalize();
+    }
+}
+

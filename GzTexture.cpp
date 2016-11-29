@@ -47,7 +47,7 @@ void GzTexture::loadFile(const char* &file)
     fclose(fd);
 }
 
-bool GzTexture::hasTexture()
+bool GzTexture::hasTexture() const
 {
     return tex_fun != NULL;
 }

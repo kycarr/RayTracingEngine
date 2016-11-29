@@ -170,15 +170,16 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
             // void shadeNonRecurSingleLight(const IntersectResult &inter, const GzRay &incRay, GzColor &reflectPart, GzColor &diffusePart)
             // input: this, inter, incRay, reflectPart, diffusePart
             // output: reflectPart, diffusePart (alter inside)
-            GzVector3 lightDir;
-            if (this->p_light_arr[i]->type == DIR_LIGHT)
-            {
-                lightDir = p_light_arr[i]->position;
-            }
-            else if (p_light_arr[i]->type == POINT_LIGHT)
-            {
-                lightDir = (p_light_arr[i]->position - inter.position).normalize();
-            }
+            //GzVector3 lightDir;
+            // Use p_light_arr[i]->getLightDir instead
+            //if (this->p_light_arr[i]->type == DIR_LIGHT)
+            //{
+                //lightDir = p_light_arr[i]->position;
+            //}
+            //else if (p_light_arr[i]->type == POINT_LIGHT)
+            //{
+                //lightDir = (p_light_arr[i]->position - inter.position).normalize();
+            //}
             float lightCoeff = 1.0f;
             lightCoeff = getLightCoeff(inter.position, p_light_arr[i]);
             // Should return a coefficient for this light, in how big a portion this light should be used
@@ -207,7 +208,8 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
             //}
             // Common part for dir light and point light
             // flipN
-            float nDotL = lightDir.dotMultiply(inter.normal);
+            // Use p_light_arr[i]->getLightDir instead
+            float nDotL = p_light_arr[i]->getLightDir(inter.position).dotMultiply(inter.normal);
             
             if (nDotL * nDotRay > 0.0f)
             {
@@ -218,7 +220,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
                     //nDotL = -nDotL;
                 //}
                 //GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
-                float lDotR = (lightDir.dotMultiply(reflectDir) < 0.0f ? 0.0f : lightDir.dotMultiply(reflectDir));
+                float lDotR = (p_light_arr[i]->getLightDir(inter.position).dotMultiply(reflectDir) < 0.0f ? 0.0f : p_light_arr[i]->getLightDir(inter.position).dotMultiply(reflectDir));
                 //reflectPart = reflectPart + p_light_arr[i]->color * std::pow(lDotR, inter.p_geometry->material.s);
                 reflectPart = reflectPart + p_light_arr[i]->color * std::pow(lDotR, inter.p_geometry->material.s) * lightCoeff;
 
@@ -256,8 +258,8 @@ float GzRender::getLightCoeff(const GzVector3 &interPos, const GzLight *p_light)
     float coeff(1.0f);
     if (p_light->type == DIR_LIGHT)
     {
-        GzVector3 lightDir(p_light->position);
-        GzRay shadowRay(interPos, lightDir);
+        //GzVector3 lightDir(p_light->position);
+        GzRay shadowRay(interPos, p_light->getLightDir(interPos));
         IntersectResult firstInter(this->p_scene->intersect(shadowRay));
         if (firstInter.p_geometry)
         {
@@ -273,8 +275,8 @@ float GzRender::getLightCoeff(const GzVector3 &interPos, const GzLight *p_light)
     }
     else if (p_light->type == POINT_LIGHT)
     {
-        GzVector3 lightDir((p_light->position - interPos).normalize());
-        GzRay shadowRay(interPos, lightDir);
+        //GzVector3 lightDir((p_light->position - interPos).normalize());
+        GzRay shadowRay(interPos, p_light->getLightDir(interPos));
         IntersectResult firstInter(this->p_scene->intersect(shadowRay));
         if (firstInter.distance <= (p_light->position - interPos).length())
         {

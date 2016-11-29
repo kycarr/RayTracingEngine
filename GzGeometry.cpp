@@ -314,7 +314,7 @@ IntersectResult Rec::intersect(const GzRay &ray) const
 	if (!(diffDotX >= 0 && diffDotX < xUnit.length() && diffDotY >= 0 && diffDotY < yUnit.length()))  return IntersectResult::NOHIT;
 	// For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
 
-    if (this->material.normal.hasTexture())
+    if ((this->material.normal).hasTexture())
     {
         // change normal according to normal mapping
         // For simplicity, this only need to be done for a rectangle.

@@ -312,8 +312,8 @@ class Union: public GzGeometry
 class GzLight
 {
 // attributes
-    int type;           // 0 for directional, 1 for point, 2 for area (do it later)
-    GzVector3 position; // position if point light, direction if directional light
+    int type;           // DIR_LIGHT for directional, POINT_LIGHT for point, AREA_LIGHT for area
+    GzVector3 position; // position if point light, direction if directional light, center point if rectangle area light
     GzColor color;      // the color of the light
 // constructors
     GzLight(int t, const GzVector3 &pos, const GzColor &col = GzColor::WHITE);
@@ -323,7 +323,7 @@ class GzLight
 // need extension for area light later.
     //GzRectangle * rect;
 // methods
-    getLightDir(const GzVector3 &pos);
+    GzVector3 getLightDir(const GzVector3 &interPos) const;
 };
 
 class GzDisplay

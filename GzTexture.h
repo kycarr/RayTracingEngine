@@ -1,5 +1,5 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef GZTEXTURE_H
+#define GZTEXTURE_H
 //
 // GzTexture.h     Represents the texture of a material
 // 
@@ -22,7 +22,7 @@ public:
     // load image texture file
     void loadFile(const char* &file);
     // texture ready for texturing?
-    bool hasTexture();
+    bool hasTexture() const;
     // texture mapping function
     GzColor tex_map(float u, float v);
     // image texture mapping

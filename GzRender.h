@@ -8,6 +8,8 @@
 #include "GzLight.h"
 #include "GzDisplay.h"
 
+#include <cstdlib>
+
 class GzRender
 {
 private:
@@ -32,7 +34,10 @@ public:
 
     int renderToDisplay();
 
+private:
     GzColor shade(const IntersectResult &inter, const GzRay &incRay, float bar);
+    float getLightCoeff(const GzVector3 &interPos, const GzLight *p_light);
+    void shadeNonRecurSingleLight(const IntersectResult &inter, const GzRay &incRay, GzLight *p_light, float weight, GzColor &reflectPart, GzColor &diffusePart);
 };
 
 #endif

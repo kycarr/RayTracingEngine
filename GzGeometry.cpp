@@ -121,7 +121,7 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
             GzVector3 norm_map = 2 * GzVector3(map.r, map.g, map.b) - GzVector3(1, 1, 1);
             GzVector3 N = (interPos - center).normalize();
             GzVector3 T = (GzVector3(N.z, N.z, -1 * N.x - N.y) * u).normalize();
-            GzVector3 B = (T.crossMultiply(N) * v).normalize();
+            GzVector3 B = (N.crossMultiply(T) * v).normalize();
             n = (norm_map.x * T + norm_map.y * B + norm_map.z * N).normalize();
         }
 

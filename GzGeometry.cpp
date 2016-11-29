@@ -161,7 +161,7 @@ float Sphere::getIntersectDistance(const GzRay &ray) const
             {
                 return dDotV - deltaSqrt;
             }
-            else
+            else if (dDotV + deltaSqrt > EPSILON0)
             {
                 return dDotV + deltaSqrt;
             }

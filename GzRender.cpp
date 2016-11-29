@@ -172,7 +172,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
             }
             else
             {
-                for (int mc = 0; mc < 50; ++mc)
+                for (int mc = 0; mc < 10; ++mc)
                 {
                     float u, v;
                     int iU = rand();
@@ -181,7 +181,7 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
                     v = static_cast<float>(iV) / RAND_MAX;
                     GzVector3 pointPos(u * p_light_arr[i]->areaRect.bX + v * p_light_arr[i]->areaRect.bY + (1.0f - u - v) * p_light_arr[i]->areaRect.base);
                     GzLight pointLight(POINT_LIGHT, pointPos, p_light_arr[i]->color);
-                    shadeNonRecurSingleLight(inter, incRay, &pointLight, 1.0f / 50, reflectPart, diffusePart);
+                    shadeNonRecurSingleLight(inter, incRay, &pointLight, 1.0f / 10, reflectPart, diffusePart);
                 }
             }
         }

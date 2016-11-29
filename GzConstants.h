@@ -28,6 +28,9 @@ const int X(0);
 const int Y(1);
 const int Z(2);
 
+// for area light
+const int AREA_SAMPLE(25);
+
 //***************************
 // Discarded old codes
 //***************************

@@ -4,7 +4,7 @@
 // Constructor makes a general light with the given type, position, and color
 // We may want to make sure directional light has the direction as a unit vector
 GzLight::GzLight(int t, const GzVector3 &pos, const GzColor &col) :
-    type(t), position(pos), color(col)
+    type(t), position(pos), color(col), areaRect(Rec())
 {
     if (type == DIR_LIGHT)
     {
@@ -12,10 +12,10 @@ GzLight::GzLight(int t, const GzVector3 &pos, const GzColor &col) :
     }
 }
 
-// Constructor makes a new white light with the given type and position
-//GzLight::GzLight(int t, const GzVector3 &pos) : GzLight(t, pos, GzColor::WHITE)
-//{
-//}
+GzLight::GzLight(const GzVector3 &base, const GzVector3 &x, const GzVector3 &y, const GzColor &col) :
+    type(AREA_LIGHT), position(base + 0.5f * x + 0.5f * y), color(col), areaRect(Rec(base, x, y)) 
+{
+}
 
 GzLight::GzLight() : GzLight(DIR_LIGHT, GzVector3(0.0f, 1.0f, 0.0f))
 {

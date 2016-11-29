@@ -56,7 +56,8 @@ int ApplicationEngine::Initialize()
 
         GzCamera *p_camera = new GzCamera(GzVector3(0.0f, 10.0f, -10.0f), GzVector3(0.0f, 5.0f, 0.0f), GzVector3(0.0f, 1.0f, 0.0f), 116.0f);
         GzLight **g_lights = new GzLight*[1];
-        g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(0.0f, 20.0f, 0.0f), GzColor::WHITE);
+        g_lights[0] = new GzLight(GzVector3(10.0f, 12.0f, 2.0f), GzVector3(0, 0, -4.0f), GzVector3(0, -4.0f, 0.0f));
+        //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(0.0f, 20.0f, 0.0f), GzColor::WHITE);
         //g_lights[0] = new GzLight(DIR_LIGHT, GzVector3(0, 1.0f, 0), GzColor::WHITE);
         //g_lights[0] = new GzLight(POINT_LIGHT, GzVector3(0, 20.0f, 0), GzColor::WHITE);
         //g_lights[1] = new GzLight(POINT_LIGHT, GzVector3(-10.0f, 20.0f, 0), GzColor::RED);

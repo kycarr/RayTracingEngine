@@ -6,6 +6,7 @@
 #include "GzConstants.h"
 #include "GzVector3.h"
 #include "GzColor.h"
+#include "GzGeometry.h"
 
 class GzLight
 {
@@ -14,10 +15,11 @@ public:
     GzVector3 position; // position if point light, direction if directional light, center point if rectangle area light
     GzColor color;      // the color of the light
 
-    //GzLight(int t, const GzVector3 &pos);
+    Rec areaRect;       // The rectangle area. Normal direction and material are not useful.
+
     GzLight(int t, const GzVector3 &pos, const GzColor &col = GzColor::WHITE);
+    GzLight(const GzVector3 &base, const GzVector3 &x, const GzVector3 &y, const GzColor &col = GzColor::WHITE);
     GzLight(); // Default constructur; Build a directional light from the direction of (0, 1, 0).
-// need extension for area light later.
 
     GzVector3 getLightDir(const GzVector3 &interPos) const;
 };

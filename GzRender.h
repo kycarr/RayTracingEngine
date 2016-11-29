@@ -8,6 +8,8 @@
 #include "GzLight.h"
 #include "GzDisplay.h"
 
+#include <cstdlib>
+
 class GzRender
 {
 private:

@@ -10,6 +10,7 @@ GzRender::GzRender(GzDisplay * p_disp) : p_display(p_disp), p_camera(nullptr), p
 {
     //GzVector3 *uniKer = new GzVector3(0.0f, 0.0f, 1.0f);
     this->p_AA = new GzAASetting(1);
+    std::srand((unsigned int)time(NULL));
 }
 
 GzRender::~GzRender()
@@ -165,61 +166,24 @@ GzColor GzRender::shade(const IntersectResult &inter, const GzRay &incRay, float
         GzTexture tex = inter.p_geometry->material.texture;
         for (int i = 0; i < this->n_lights; ++i)
         {
-            shadeNonRecurSingleLight(inter, incRay, p_light_arr[i], 1.0f, reflectPart, diffusePart);
-            //float lightCoeff = 1.0f;
-            //lightCoeff = getLightCoeff(inter.position, p_light_arr[i]);
-            // Should return a coefficient for this light, in how big a portion this light should be used
-            //if (lightCoeff == 0.0f)
-            //{
-                //continue; // skip this light
-            //}
-            //if (this->p_light_arr[i]->type == DIR_LIGHT)
-            //{
-                //lightDir = p_light_arr[i]->position;
-                //GzRay shadowRay(inter.position, lightDir);
-                //if (this->p_scene->intersect(shadowRay).p_geometry && this->p_scene->intersect(shadowRay).p_geometry->material.f == 0.0f)
-                //{
-                    //continue;
-                //}
-            //}
-            //else if (p_light_arr[i]->type == POINT_LIGHT)
-            //{
-                //lightDir = (p_light_arr[i]->position - inter.position).normalize();
-                //GzRay shadowRay(inter.position, lightDir);
-                //if (this->p_scene->intersect(shadowRay).distance <= (p_light_arr[i]->position - inter.position).length()
-                        //&& this->p_scene->intersect(shadowRay).p_geometry->material.f == 0.0f)
-                //{
-                    //continue;
-                //}
-            //}
-            // Common part for dir light and point light
-            // flipN
-            // Use p_light_arr[i]->getLightDir instead
-            //float nDotL = p_light_arr[i]->getLightDir(inter.position).dotMultiply(inter.normal);
-            
-            //if (nDotL * nDotRay > 0.0f)
-            //{
-                //GzVector3 flipN = inter.normal;
-                //if (nDotL < 0.0f)
-                //{
-                    //flipN = inter.normal.flip();
-                    //nDotL = -nDotL;
-                //}
-                //GzVector3 reflecDir = 2 * nDotL * flipN - lightDir;
-                //float lDotR = (p_light_arr[i]->getLightDir(inter.position).dotMultiply(reflectDir) < 0.0f ? 0.0f : p_light_arr[i]->getLightDir(inter.position).dotMultiply(reflectDir));
-                //reflectPart = reflectPart + p_light_arr[i]->color * std::pow(lDotR, inter.p_geometry->material.s);
-                //reflectPart = reflectPart + p_light_arr[i]->color * std::pow(lDotR, inter.p_geometry->material.s) * lightCoeff;
-
-                //if (tex.hasTexture())
-                //{
-                    //diffusePart = diffusePart + p_light_arr[i]->color.modulate(tex.tex_map(inter.u, inter.v)) * nDotL * lightCoeff;
-                //}
-                //else
-                //{
-                    //diffusePart = diffusePart + p_light_arr[i]->color.modulate(inter.p_geometry->material.Kd) * nDotL * lightCoeff;
-                //}
-            //}
-            // </ For each light, this part should be identical >
+            if (p_light_arr[i]->type != AREA_LIGHT)
+            {
+                shadeNonRecurSingleLight(inter, incRay, p_light_arr[i], 1.0f, reflectPart, diffusePart);
+            }
+            else
+            {
+                for (int mc = 0; mc < 50; ++mc)
+                {
+                    float u, v;
+                    int iU = rand();
+                    int iV = rand();
+                    u = static_cast<float>(iU) / RAND_MAX;
+                    v = static_cast<float>(iV) / RAND_MAX;
+                    GzVector3 pointPos(u * p_light_arr[i]->areaRect.bX + v * p_light_arr[i]->areaRect.bY + (1.0f - u - v) * p_light_arr[i]->areaRect.base);
+                    GzLight pointLight(POINT_LIGHT, pointPos, p_light_arr[i]->color);
+                    shadeNonRecurSingleLight(inter, incRay, &pointLight, 1.0f / 50, reflectPart, diffusePart);
+                }
+            }
         }
         //TODO This correspond with radiosity/diffuse interreflection
         //if (tex.hasTexture())

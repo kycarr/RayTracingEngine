@@ -41,7 +41,7 @@ void GzTexture::loadFile(const char* &file)
 
     for (i = 0; i < xs*ys; i++) {	/* create array of GzColor values */
         fread(pixel, sizeof(pixel), 1, fd);
-        image[i] = GzColor((float)((int)pixel[0]) * (1.0 / 255.0), (float)((int)pixel[1]) * (1.0 / 255.0), (float)((int)pixel[2]) * (1.0 / 255.0));
+        image[i] = GzColor((float)((int)pixel[0]) / 255.0, (float)((int)pixel[1]) / 255.0, (float)((int)pixel[2]) / 255.0);
     }
 
     fclose(fd);

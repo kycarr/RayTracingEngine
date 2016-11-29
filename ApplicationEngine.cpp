@@ -150,11 +150,10 @@ int ApplicationEngine::Render()
         const char* file = "tex_normal.ppm";
         GzMaterial mat(GzTexture(&GzTexture::checker_ptex_func, 1), 15, 0.2f);
         GzMaterial mat2(GzTexture(&GzTexture::checker_ptex_func, 5), 15, 0.2f);
-        //GzMaterial mat_norm(GzColor(0.5f, 0.5f, 0.5f), GzTexture(file, &GzTexture::image_tex_func, 0), 16.0f, 0.8f);
+        GzMaterial mat_norm(GzColor::WHITE, GzTexture(file, &GzTexture::image_tex_func, 0), 15, 0.0f);
         GzGeometry ** p_geos = new GzGeometry*[3];
         p_geos[0] = new Sphere(GzVector3(5.2f, 5.0f, 0.0f), 5.0f, mat2);
-        //p_geos[0] = new Sphere(GzVector3(5.2f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor(0.5f, 0.5f, 0.5f), 16.0f, 0.8f));
-        p_geos[1] = new Sphere(GzVector3(-5.2f, 5.0f, 0.0f), 5.0f, GzMaterial(GzColor(0.5f, 0.5f, 0.5f), 16.0f, 0.8f));
+        p_geos[1] = new Sphere(GzVector3(-5.2f, 5.0f, 0.0f), 5.0f, mat_norm);
         p_geos[2] = new Plane(GzVector3(0.0f, 1.0f, 0.0f), 0.0f, GzVector3(0.0f, 0.0f, 1.0f), mat);
         GzGeometry * p_unionGeometry = new Union(3, p_geos);
         //Sphere s0(GzVector3(0.0f, 0.0f, 10.0f), 5.0f);

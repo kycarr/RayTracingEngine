@@ -112,6 +112,17 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
             u = static_cast<float>(phi / (2*PI) + 0.5);
         }
 
+        GzTexture tex_norm = material.normal;
+        if (tex_norm.hasTexture())
+        {
+            GzColor map = tex_norm.tex_map(u, v);
+            GzVector3 norm_map = 2 * GzVector3(map.r, map.g, map.b) - GzVector3(1, 1, 1);
+            GzVector3 N = (interPos - center).normalize();
+            GzVector3 T = GzVector3(N.z, N.z, -1 * N.x - N.y);
+            GzVector3 B = N.crossMultiply(T);
+            normal = (norm_map.x * T + norm_map.y * B + norm_map.z * N).normalize();
+        }
+
         return IntersectResult(this, distance, interPos, normal, u, v);
         //float o2c((this->center - ray.origin).length());
         //if (o2c < radius)

@@ -101,7 +101,7 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
     if (distance > 0.0f)
     {
         GzVector3 interPos(ray.getPoint(distance));
-        GzVector3 normal = (interPos - this->center).normalize();
+        //GzVector3 normal = (interPos - this->center).normalize();
         GzVector3 relative(interPos - center);
         GzVector3 n(relative.normalize());
         float theta = std::acos(n.dotMultiply((this->arctic - this->center).normalize()));
@@ -115,7 +115,7 @@ IntersectResult Sphere::intersect(const GzRay &ray) const
             u = static_cast<float>(phi / (2*PI) + 0.5);
         }
 
-        return IntersectResult(this, distance, interPos, normal, u, v);
+        return IntersectResult(this, distance, interPos, n, u, v);
         //float o2c((this->center - ray.origin).length());
         //if (o2c < radius)
         //{
@@ -314,6 +314,11 @@ IntersectResult Rec::intersect(const GzRay &ray) const
 	if (!(diffDotX >= 0 && diffDotX < xUnit.length() && diffDotY >= 0 && diffDotY < yUnit.length()))  return IntersectResult::NOHIT;
 	// For immediate result, I don't consider general case. Just assume xUnit and yUnit are orthogonal.
 
+    if (this->material.normal.hasTexture())
+    {
+        // change normal according to normal mapping
+        // For simplicity, this only need to be done for a rectangle.
+    }
 
 	return IntersectResult(this, distance, interPos, normal, diffDotX/xUnit.length(), diffDotY/yUnit.length());
 }
